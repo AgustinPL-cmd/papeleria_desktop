@@ -89,7 +89,7 @@ def registro_producto_view(page: ft.Page):
     )
 
     # Mensaje de Confirmación
-    mensaje = ft.Text("", color="black")
+    mensaje = ft.Text("", color="red", text_align=ft.TextAlign.CENTER)
 
     #Formulario
     form_container = Container_form(components=[inputs,botones, mensaje], width=600).getForm()
