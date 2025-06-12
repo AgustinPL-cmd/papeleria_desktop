@@ -1,18 +1,19 @@
 import flet as ft
 
 class Basic_Text_input:
-    def __init__(self, label, dropdown_content=None, on_change = None):
+    def __init__(self, label, dropdown_content=None, on_change=None, password=False):
         self.text = label
         self.dropdown_content = dropdown_content
+
         self.label = ft.Text(
             value=label + ":",
             color="black",
             size=16,
             weight=ft.FontWeight.BOLD,
-            width=140,
+            width=140
         )
 
-        # Solo crear campo de texto si NO hay dropdown
+        # Campo de texto
         if dropdown_content is None:
             self.textfield = ft.TextField(
                 bgcolor="#8285a2",
@@ -25,15 +26,17 @@ class Basic_Text_input:
                     size=16,
                 ),
                 expand=True,
-                on_change= on_change
+                on_change=on_change,
+                password=password,
+                can_reveal_password=password
             )
 
-            self.rowText = ft.Row(
+            self.component = ft.Row(
                 controls=[self.label, self.textfield],
                 alignment=ft.MainAxisAlignment.START,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
             )
-
+        # Dropdown
         else:
             self.dropdown = ft.Dropdown(
                 bgcolor="#131D4F",
@@ -47,10 +50,10 @@ class Basic_Text_input:
                 ),
                 expand=True,
                 options=self.get_options(),
-                on_change= on_change
+                on_change=on_change
             )
 
-            self.rowDrop = ft.Row(
+            self.component = ft.Row(
                 controls=[self.label, self.dropdown],
                 alignment=ft.MainAxisAlignment.START,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
@@ -59,11 +62,12 @@ class Basic_Text_input:
     def get_options(self):
         return [ft.dropdown.Option(item) for item in self.dropdown_content]
 
-    def getRowText(self):
-        return self.rowText
+    def getComponent(self):
+        return self.component
 
-    def getRowDrop(self):
-        return self.rowDrop
-
-    def getText(self):
-        return  self.text
+    def getValue(self):
+        if hasattr(self, 'textfield'):
+            return self.textfield.value
+        elif hasattr(self, 'dropdown'):
+            return self.dropdown.value
+        return None

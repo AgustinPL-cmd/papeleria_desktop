@@ -58,19 +58,19 @@ def registro_producto_view(page: ft.Page):
 
     #Inputs
     campos = [
-        bti("PRODUCTO", on_change=limpiar_errores).getRowText(),
+        bti("PRODUCTO", on_change=limpiar_errores).getComponent(),
         mensaje_nombre,
-        bti("DESCRIPCIÓN", on_change=limpiar_errores).getRowText(),
+        bti("DESCRIPCIÓN", on_change=limpiar_errores).getComponent(),
         mensaje_descripcion,
-        bti("PRECIO DE VENTA", on_change=limpiar_errores).getRowText(),
+        bti("PRECIO DE VENTA", on_change=limpiar_errores).getComponent(),
         mensaje_precio_venta,
-        bti("PRECIO DE COMPRA", on_change=limpiar_errores).getRowText(),
+        bti("PRECIO DE COMPRA", on_change=limpiar_errores).getComponent(),
         mensaje_precio_compra,
-        bti("STOCK ACTUAL", on_change=limpiar_errores).getRowText(),
+        bti("STOCK ACTUAL", on_change=limpiar_errores).getComponent(),
         mensaje_stock_actual,
-        bti("STOCK MÍNIMO", on_change=limpiar_errores).getRowText(),
+        bti("STOCK MÍNIMO", on_change=limpiar_errores).getComponent(),
         mensaje_stock_minimo,
-        bti("CATEGORIA", categorias_nombre, on_change=limpiar_errores).getRowDrop(),
+        bti("CATEGORIA", categorias_nombre, on_change=limpiar_errores).getComponent(),
         mensaje_categoria,
     ]
 
@@ -103,7 +103,8 @@ def registro_producto_view(page: ft.Page):
         )
     )
 
-
-
-
 ft.app(target=registro_producto_view)
+
+
+
+

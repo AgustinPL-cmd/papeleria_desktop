@@ -1,7 +1,19 @@
 import flet as ft
-from papeleria_app.ui.pages.registro_producto import registro_producto_view
+from papeleria_app.ui.pages.inicio_view import inicio_view
+from papeleria_app.ui.pages.login_view import login_view
 
 def main(page: ft.Page):
-    registro_producto_view(page)
+    def route_change(e):
+        if page.route == "/":
+            page.views.clear()
+            page.views.append(inicio_view())
+        elif page.route == "/login":
+            page.views.clear()
+            page.views.append(login_view())
+        page.update()
+
+    page.on_route_change = route_change
+    page.go(page.route)
 
 ft.app(target=main)
+
