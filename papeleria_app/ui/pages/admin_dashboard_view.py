@@ -3,10 +3,8 @@ import flet as ft
 
 def admin_dashboard_view(page):
     usuario_data = page.client_storage.get("usuario")
-    if usuario_data:
-        nombre = usuario_data["nombre"]
-        rol = usuario_data["rol"]
-    button = ft.ElevatedButton(nombre)
+    user = usuario_data["user"]
+    button = ft.ElevatedButton(user)
 
     return ft.View(
         route="/login",

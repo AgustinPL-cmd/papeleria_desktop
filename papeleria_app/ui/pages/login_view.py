@@ -54,8 +54,7 @@ def login_view():
         else:
             print("Login correcto:", mensaje)
             e.page.client_storage.set("usuario", {
-                "rol": usuario.rol,
-                "nombre": usuario.nombre
+                "user": usuario
             })
 
             redireccionamiento(e, usuario.rol)

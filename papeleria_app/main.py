@@ -18,7 +18,7 @@ def main(page: ft.Page):
             page.views.append(admin_dashboard_view(page))
         elif page.route == "/empleado_dashboard_view":
             page.views.clear()
-            page.views.append(empleado_dashboard_view())
+            page.views.append(empleado_dashboard_view(page))
 
         page.update()
 
