@@ -39,7 +39,7 @@ def verificar_usuario(user, password):
             conn.close()
 
 
-def insert_empleado(nombre, contrasena, rol='empleado', activo=True):
+def insert_empleado(usuario):
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -50,10 +50,10 @@ def insert_empleado(nombre, contrasena, rol='empleado', activo=True):
         )
 
         cursor.execute(query, (
-            nombre,
-            contrasena,        # aquí va la contraseña tal cual
-            rol,
-            activo
+            usuario.nombre,
+            usuario.contrasena,        # aquí va la contraseña tal cual
+            usuario.rol,
+            usuario.activo
         ))
 
         conn.commit()

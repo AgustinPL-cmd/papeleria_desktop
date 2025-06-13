@@ -1,7 +1,7 @@
 
 import flet as ft
 from papeleria_app.models.usuario import Usuario
-from papeleria_app.repositorios.usuario_repo import insertar_empleado
+from papeleria_app.repositorios.usuario_repo import insert_empleado
 from papeleria_app.ui.components.logo_header import Logo_header
 
 def alta_empleado_view(page: ft.Page):
@@ -28,7 +28,7 @@ def alta_empleado_view(page: ft.Page):
             activo=True
         )
         try:
-            insertar_empleado(nuevo)
+            insert_empleado(nuevo)
             mensaje.value = "Empleado registrado correctamente"
             mensaje.color = "green"
         except Exception as ex:
