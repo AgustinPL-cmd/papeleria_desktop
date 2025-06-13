@@ -1,0 +1,112 @@
+
+import flet as ft
+from papeleria_app.models.usuario import Usuario
+from papeleria_app.repositorios.usuario_repo import insertar_empleado
+from papeleria_app.ui.components.logo_header import Logo_header
+
+def alta_empleado_view(page: ft.Page):
+
+    header = Logo_header("images/logo_blanco.jpg").getHeader()
+
+    nombre_input = ft.TextField(label="NOMBRE", width=300)
+    rol_input = ft.TextField(value="Empleado", label="ROL", width=300, disabled=True)
+    estado_input = ft.TextField(value="Activo", label="ESTADO", width=300, disabled=True)
+    contrasena_input = ft.TextField(
+        label="CONTRASEÑA",
+        password=True,
+        can_reveal_password=True,
+        width=300
+    )
+
+    mensaje = ft.Text("", color="red", size=14, text_align=ft.TextAlign.CENTER)
+
+    def registrar(e):
+        nuevo = Usuario(
+            nombre=nombre_input.value,
+            contrasena=contrasena_input.value,
+            rol="empleado",
+            activo=True
+        )
+        try:
+            insertar_empleado(nuevo)
+            mensaje.value = "Empleado registrado correctamente"
+            mensaje.color = "green"
+        except Exception as ex:
+            mensaje.value = f"Error al registrar: {ex}"
+            mensaje.color = "red"
+            print("ERROR:", ex)
+        page.update()
+
+    def cancelar(e):
+        page.go("/")
+
+    form_container = ft.Container(
+        width=400,
+        height=435,
+        padding=30,
+        border_radius=20,
+        bgcolor="#d8d5eb",
+        alignment=ft.alignment.center,
+        shadow=ft.BoxShadow(blur_radius=30, color="#b0bec5", offset=ft.Offset(0, 2)),
+        content=ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20,
+            controls=[
+                ft.Text("ALTA DE EMPLEADOS", size=22, weight="bold", text_align=ft.TextAlign.CENTER),
+                nombre_input,
+                rol_input,
+                estado_input,
+                contrasena_input,
+                mensaje,
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.ElevatedButton("GUARDAR", width=130, on_click=registrar),
+                        ft.ElevatedButton("CANCELAR", width=130, on_click=cancelar),
+                    ]
+                )
+            ]
+        )
+    )
+
+    layout = ft.Column(
+        expand=True,
+        controls=[
+            header,
+            ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                bgcolor="#cdf3ff",
+                content=form_container
+            )
+        ]
+    )
+
+    return layout
+
+def main(page: ft.Page):
+    page.title = "Alta de Empleado"
+    page.views.clear()
+    page.views.append(
+        ft.View(
+            route="/alta_empleado",
+            controls=[alta_empleado_view(page)],
+        )
+    )
+    page.update()
+
+ft.app(target=main)
+
+
+def main(page: ft.Page):
+    page.title = "Alta de Empleado"
+    page.views.clear()
+    page.views.append(
+        ft.View(
+            route="/alta_empleado",
+            controls=[alta_empleado_view(page)],
+        )
+    )
+    page.update()
+
+ft.app(target=main)
