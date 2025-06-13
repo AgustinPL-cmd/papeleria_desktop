@@ -95,3 +95,4 @@ def login_view():
         padding=0,
         appbar=None
     )
+
