@@ -37,3 +37,32 @@ def verificar_usuario(user, password):
     finally:
         if 'conn' in locals():
             conn.close()
+
+
+def insert_empleado(nombre, contrasena, rol='empleado', activo=True):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = (
+            "INSERT INTO Usuarios (nombre, contrasena, rol, activo) "
+            "VALUES (%s, %s, %s, %s)"
+        )
+
+        cursor.execute(query, (
+            nombre,
+            contrasena,        # aquí va la contraseña tal cual
+            rol,
+            activo
+        ))
+
+        conn.commit()
+        return True, "Empleado insertado correctamente."
+
+    except Exception as e:
+        print(f"Error al insertar empleado: {e}")
+        return False, f"Error al insertar empleado: {e}"
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
