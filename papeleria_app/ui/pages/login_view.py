@@ -5,7 +5,11 @@ from papeleria_app.ui.components.basic_text_input import Basic_Text_input as bti
 from papeleria_app.ui.components.container_form import Container_form
 from papeleria_app.repositorios.usuario_repo import verificar_usuario
 
+user = None
+
+
 def login_view():
+
     def limpiar_mensaje(e):
         output.value = ""
         output.update()
@@ -30,11 +34,18 @@ def login_view():
         horizontal_alignment=ft.CrossAxisAlignment.END,
     )
 
+
+    def redireccionamiento(e, rol):
+        if rol == "encargado":
+            e.page.go("/admin_dashboard_view")
+        else:
+            e.page.go("/empleado_dashboard_view")
+
+
     # Verificación al presionar el botón
     def verificacion(e):
         user_input = user_row.controls[1].value
         password_input = password_row.controls[1].value
-
         usuario, mensaje = verificar_usuario(user_input, password_input)
         if usuario is None:
             output.value = mensaje
@@ -42,17 +53,24 @@ def login_view():
             print(mensaje)
         else:
             print("Login correcto:", mensaje)
+            e.page.client_storage.set("usuario", {
+                "rol": usuario.rol,
+                "nombre": usuario.nombre
+            })
+
+            redireccionamiento(e, usuario.rol)
 
 
 
 
+    button_ingresar = ft.ElevatedButton("INGRESAR", width=200, on_click=verificacion)
 
 
     # Formulario que incluye botón y mensaje
     form = Container_form(
         components=[
             column_inputs,
-            ft.ElevatedButton("INGRESAR", width=200, on_click=verificacion),
+            button_ingresar,
             output
         ],
         width=400,
