@@ -52,7 +52,7 @@ def alta_empleado_view(page: ft.Page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=20,
             controls=[
-                ft.Text("ALTA DE EMPLEADOS", size=22, weight="bold", text_align=ft.TextAlign.CENTER),
+               ft.Text("ALTA DE EMPLEADOS", size=22, weight="bold", text_align=ft.TextAlign.CENTER, color="black"),
                 nombre_input,
                 rol_input,
                 estado_input,
