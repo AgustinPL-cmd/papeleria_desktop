@@ -66,3 +66,27 @@ def insert_empleado(usuario):
     finally:
         if 'conn' in locals():
             conn.close()
+
+#No eliminare a los empleados que tengan ventas, solo los voy a desactivar
+def eliminar_o_desactivar_empleado(id_usuario):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+
+        cursor.execute("SELECT COUNT(*) FROM Ventas WHERE id_usuario = %s", (id_usuario,))
+        ventas = cursor.fetchone()[0]
+
+        if ventas == 0:
+            cursor.execute("DELETE FROM Usuarios WHERE id_usuario = %s", (id_usuario,))
+            conn.commit()
+            return True, "Empleado eliminado permanentemente (sin ventas registradas)"
+        else:
+            cursor.execute("UPDATE Usuarios SET activo = FALSE WHERE id_usuario = %s", (id_usuario,))
+            conn.commit()
+            return True, "Empleado desactivado (tiene ventas registradas)"
+    except Exception as e:
+        return False, f"Error al eliminar/desactivar empleado: {e}"
+    finally:
+        if 'conn' in locals():
+            conn.close()
