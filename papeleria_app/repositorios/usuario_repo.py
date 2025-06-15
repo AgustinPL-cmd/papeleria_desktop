@@ -90,3 +90,31 @@ def eliminar_o_desactivar_empleado(id_usuario):
     finally:
         if 'conn' in locals():
             conn.close()
+
+#Actualizo solo nombre y/o contraseña
+def actualizar_nombre_contrasena(id_usuario, nuevo_nombre, nueva_contrasena=None):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        if nueva_contrasena:
+            query = (
+                "UPDATE Usuarios SET nombre = %s, contrasena = %s WHERE id_usuario = %s"
+            )
+            cursor.execute(query, (nuevo_nombre, nueva_contrasena, id_usuario))
+        else:
+            query = (
+                "UPDATE Usuarios SET nombre = %s WHERE id_usuario = %s"
+            )
+            cursor.execute(query, (nuevo_nombre, id_usuario))
+
+        conn.commit()
+        return True, "Datos actualizados correctamente"
+
+    except Exception as e:
+        print(f"Error al actualizar nombre/contraseña: {e}")
+        return False, f" Error: {e}"
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
