@@ -70,3 +70,5 @@ CREATE TABLE AlertasInventario (
     estado ENUM('pendiente', 'resuelto') DEFAULT 'pendiente',
     FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
 );
+
+ALTER TABLE Productos ADD estado ENUM('Activo', 'Suspendido') NOT NULL DEFAULT 'Activo';
