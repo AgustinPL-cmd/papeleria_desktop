@@ -110,3 +110,31 @@ def actualizar_producto(producto: Producto):
     finally:
         if conn:
             conn.close()
+
+    def eliminar_o_suspender_producto(id_producto):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+
+        cursor.execute("SELECT COUNT(*) FROM DetalleVenta WHERE id_producto = %s", (id_producto,))
+        ventas = cursor.fetchone()[0]
+
+        if ventas == 0:
+
+            cursor.execute("DELETE FROM Productos WHERE id_producto = %s", (id_producto,))
+            mensaje = "Producto eliminado permanentemente (sin ventas registradas)"
+        else:
+            # Suspender si tiene ventas
+            cursor.execute("UPDATE Productos SET estado = 'suspendido' WHERE id_producto = %s", (id_producto,))
+            mensaje = "Producto suspendido (tiene ventas registradas)"
+
+        conn.commit()
+        return True, mensaje
+
+    except Exception as e:
+        return False, f"Error al eliminar o suspender producto: {e}"
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
