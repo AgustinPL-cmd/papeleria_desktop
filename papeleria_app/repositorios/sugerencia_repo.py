@@ -28,3 +28,23 @@ def eliminar_sugerencia(id_sugerencia):
     finally:
         if conn:
             conn.close()
+
+def insert_sugerencia(sugerencia: SugerenciaCliente):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = (
+            "INSERT INTO SugerenciasClientes (producto_sugerido, comentario) "
+            "VALUES (%s, %s)"
+        )
+        cursor.execute(query, (sugerencia.producto_sugerido, sugerencia.comentario))
+        conn.commit()
+        return True, "Sugerencia guardada correctamente"
+    except Exception as e:
+        print(f"❌ Error al insertar sugerencia: {e}")
+        return False, f"Error: {e}"
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
