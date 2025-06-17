@@ -14,6 +14,7 @@ def empleado_registrar_venta_view(page):
     def limpiar(e):
         tabla_productos.rows.clear()
         resetear_buscador()
+        mensaje_confirmacion.value = ""
 
     def registrar_venta(e):
         rows = tabla_productos.rows
@@ -27,13 +28,17 @@ def empleado_registrar_venta_view(page):
 
                     else:
                         valores.append("[No texto]")
+                try:
+                    producto = buscar_coincidencias(valores[0])
+                    commit, mensaje = insertar_venta(datetime.now().date(), valores[1], valores[3], venta_actual + 1,
+                                                     producto[0][0], user_id)
 
-                producto = buscar_coincidencias(valores[0])
-                commit, mensaje = insertar_venta(datetime.now().date(), valores[1], valores[3], venta_actual + 1,
-                                                 producto[0][0], user_id)
-
-                mensaje_confirmacion.value = "¡Venta registrada exitosamente!"
-                page.update()
+                    mensaje_confirmacion.value = mensaje
+                    mensaje_confirmacion.color = "green"
+                    page.update()
+                except Exception as e:
+                    mensaje = f'Ha ocurrido un error inesperado {e}'
+                    return None, mensaje
 
 
     buscador_container = ft.Container()  # Contenedor para el dropdown
@@ -57,7 +62,7 @@ def empleado_registrar_venta_view(page):
         )
         productos = buscar_coincidencias("")
         nuevo_buscador.options = [
-            ft.dropdown.Option(key=producto[1], text=producto[1]) for producto in productos
+            ft.dropdown.Option(key=producto[1], text=f"{producto[1]}: {producto[5]}") for producto in productos
         ]
         buscador_container.content = nuevo_buscador
         globals()['buscador'] = nuevo_buscador  # Actualiza referencia global
@@ -69,37 +74,48 @@ def empleado_registrar_venta_view(page):
             producto = productos[0]
             cantidad = int(cantidad_input.value)
             subtotal = producto[3] * cantidad
+            if producto[5] > cantidad:
 
-            def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
-                try:
-                    del tabla_productos.rows[fila_idx]
-                except:
-                    del tabla_productos.rows[0]
+                def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
+                    try:
+                        del tabla_productos.rows[fila_idx]
+                    except:
+                        del tabla_productos.rows[0]
+                    page.update()
+
+                boton_eliminar = ft.IconButton(
+                    icon=ft.Icons.DELETE,
+                    tooltip="Eliminar",
+                    icon_color="red",
+                    on_click=lambda e, fila_idx=len(tabla_productos.rows): eliminar_fila(e, fila_idx)
+                )
+                tabla_productos.rows.append(
+                    ft.DataRow(
+                        cells=[
+                            ft.DataCell(ft.Text(producto[1], color="black")),
+                            ft.DataCell(ft.Text(str(cantidad), color="black")),
+                            ft.DataCell(ft.Text(str(producto[3]), color="black")),
+                            ft.DataCell(ft.Text(str(subtotal), color="black")),
+                            ft.DataCell(ft.Text(str(producto[5]), color="black")),
+                            ft.DataCell(boton_eliminar)
+                        ]
+                    )
+                )
+
+                cantidad_input.value = ""
+                resetear_buscador()
+                mensaje_confirmacion.value = ""
+
                 page.update()
 
-            boton_eliminar = ft.IconButton(
-                icon=ft.Icons.DELETE,
-                tooltip="Eliminar",
-                icon_color="red",
-                on_click=lambda e, fila_idx=len(tabla_productos.rows): eliminar_fila(e, fila_idx)
-            )
-            tabla_productos.rows.append(
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(producto[1], color="black")),
-                        ft.DataCell(ft.Text(str(cantidad), color="black")),
-                        ft.DataCell(ft.Text(str(producto[3]), color="black")),
-                        ft.DataCell(ft.Text(str(subtotal), color="black")),
-                        ft.DataCell(boton_eliminar)
-                    ]
-                )
-            )
+            else:
+                mensaje_confirmacion.value = "Stock insuficiente"
+                mensaje_confirmacion.color = "red"
+                page.update()
 
-            cantidad_input.value = ""
-            resetear_buscador()
-
-            page.update()
         else:
+            mensaje_confirmacion.value = "Producto inexistente"
+            mensaje_confirmacion.color = "red"
             page.update()
 
     usuario_data = page.client_storage.get("usuario")
@@ -168,6 +184,7 @@ def empleado_registrar_venta_view(page):
             ft.DataColumn(ft.Text("Cantidad", color="white")),
             ft.DataColumn(ft.Text("Precio Unitario", color="white")),
             ft.DataColumn(ft.Text("Subtotal", color="white")),
+            ft.DataColumn(ft.Text("Stock Actual", color="white")),
             ft.DataColumn(ft.Text("Eliminar", color="white"))
         ],
         rows=[],
@@ -194,7 +211,6 @@ def empleado_registrar_venta_view(page):
             vertical_alignment=ft.CrossAxisAlignment.START,
             spacing=50
         ),
-        expand=True
     )
     mensaje_confirmacion = ft.Text("", color="green", size=16, weight=ft.FontWeight.BOLD)
 

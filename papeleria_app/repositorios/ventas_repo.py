@@ -141,7 +141,7 @@ def insertar_venta(fecha, cantidad, subtotal, numVenta, idProducto, idUsuario):
         return True, "Venta insertado correctamente."
     except Exception as e:
         print(f"Error al insertar la venta: {e}")
-        return None
+        return False, f"Error al insertar la venta: {e}"
     finally:
         if 'conn' in locals():
             conn.close()
