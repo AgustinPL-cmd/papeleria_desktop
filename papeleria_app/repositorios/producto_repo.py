@@ -29,3 +29,30 @@ def insert_productos(nombre_producto, descripcion, precio_unitario_venta,
     finally:
         if 'conn' in locals():
             conn.close()
+
+
+def buscar_coincidencias(producto):
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            SELECT * FROM Productos 
+            WHERE nombre_producto LIKE %s;
+        """
+        # Agregamos % al inicio y final del término de búsqueda
+        parametro_busqueda = f"%{producto}%"
+
+        cursor.execute(query, (parametro_busqueda,))
+        resultados = cursor.fetchall()
+
+        return resultados
+
+    except Exception as e:
+        print(f"Error al buscar producto: {e}")
+        return []  # Devuelve lista vacía en caso de error
+
+    finally:
+        if conn and conn.is_connected():
+            conn.close()

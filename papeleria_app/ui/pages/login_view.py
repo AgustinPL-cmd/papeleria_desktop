@@ -52,7 +52,6 @@ def login_view():
             output.update()
             print(mensaje)
         else:
-            print("Login correcto:", mensaje)
             e.page.client_storage.set("usuario", {
                 "user": usuario
             })

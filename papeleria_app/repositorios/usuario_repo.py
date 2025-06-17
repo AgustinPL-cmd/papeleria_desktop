@@ -1,5 +1,4 @@
 from papeleria_app.database.connection import get_connection
-import papeleria_app.models.usuario
 from papeleria_app.models.usuario import Usuario
 
 
