@@ -8,7 +8,7 @@ def menu_lateral_empleado():
         elif button == "REGISTRAR VENTA":
             e.page.go("/empladoRegistrarVenta")
         else:
-            e.page.go("/empleado_registrar_comentario")
+            e.page.go("/empleadoRegistrarSugerencia")
 
     # Botones del menú lateral
     home_button = ft.IconButton(icon=ft.Icons.HOME, bgcolor="#8e7db4", icon_color="#cdf3ff", hover_color="#231f20",

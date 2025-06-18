@@ -5,7 +5,13 @@ from papeleria_app.repositorios.ventas_repo import obtener_venta_by_numVenta
 
 def alert_venta_detalles(page, venta):
     try:
-        fecha_venta, num_venta, total = venta
+        if len(venta) == 3:
+            fecha_venta = venta[0]
+            num_venta = venta[1]
+            total = venta[2]
+        else:
+            fecha_venta, num_venta, total, ganancia = venta
+
 
         # Obtener detalles de la venta
         detalles = obtener_venta_by_numVenta(num_venta)

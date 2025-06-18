@@ -5,12 +5,13 @@ from openpyxl.styles.alignment import horizontal_alignments
 
 from papeleria_app.repositorios.ventas_repo import insertar_venta, obtener_num_venta_actual
 from papeleria_app.ui.components.error_text import Error_text
-from papeleria_app.repositorios.producto_repo import buscar_coincidencias
+from papeleria_app.repositorios.producto_repo import buscar_coincidencias, aumentar_stock_producto
 from papeleria_app.ui.components.header_empleado import header_empleado
 from papeleria_app.ui.components.menu_lateral_empleado import menu_lateral_empleado
+from papeleria_app.ui.components.menu_lateral_encargado import menu_lateral_encargado
 
 
-def empleado_registrar_venta_view(page):
+def admin_registrar_compra(page):
     dlg_venta = ft.AlertDialog(
         modal=True,
         title=ft.Text("Detalle de venta"),
@@ -18,14 +19,13 @@ def empleado_registrar_venta_view(page):
         actions=[ft.TextButton("Cerrar", on_click=lambda e: None)]
     )
 
-    def limpiar(e):
+    def limpiar(e=None):
         tabla_productos.rows.clear()
         resetear_buscador()
         mensaje_confirmacion.value = ""
 
-    def registrar_venta(e):
+    def registrar_compra(e):
         rows = tabla_productos.rows
-        venta_actual = int(obtener_num_venta_actual()[0])
         if rows:
             for row in rows:
                 valores = []
@@ -37,8 +37,8 @@ def empleado_registrar_venta_view(page):
                         valores.append("[No texto]")
                 try:
                     producto = buscar_coincidencias(valores[0])
-                    commit, mensaje = insertar_venta(datetime.now().date(), valores[1], valores[3], venta_actual + 1,
-                                                     producto[0][0], user_id)
+                    print(valores)
+                    commit, mensaje = aumentar_stock_producto(producto[0][0], int(valores[1]))
 
                     mensaje_confirmacion.value = mensaje
                     mensaje_confirmacion.color = "green"
@@ -46,6 +46,7 @@ def empleado_registrar_venta_view(page):
                 except Exception as e:
                     mensaje = f'Ha ocurrido un error inesperado {e}'
                     return None, mensaje
+        limpiar()
 
 
     buscador_container = ft.Container()  # Contenedor para el dropdown
@@ -66,6 +67,7 @@ def empleado_registrar_venta_view(page):
             label_style=ft.TextStyle(color="#0B1D51"),
             color="black",
             text_style=ft.TextStyle(color="black"),
+
         )
         productos = buscar_coincidencias("")
         nuevo_buscador.options = [
@@ -80,7 +82,7 @@ def empleado_registrar_venta_view(page):
         if productos and cantidad_input.value:
             producto = productos[0]
             cantidad = int(cantidad_input.value)
-            subtotal = producto[3] * cantidad
+            costo = producto[4] * cantidad
             if producto[5] > cantidad:
 
                 def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
@@ -101,8 +103,8 @@ def empleado_registrar_venta_view(page):
                         cells=[
                             ft.DataCell(ft.Text(producto[1], color="black")),
                             ft.DataCell(ft.Text(str(cantidad), color="black")),
-                            ft.DataCell(ft.Text(str(producto[3]), color="black")),
-                            ft.DataCell(ft.Text(str(subtotal), color="black")),
+                            ft.DataCell(ft.Text(str(producto[4]), color="black")),
+                            ft.DataCell(ft.Text(str(costo), color="black")),
                             ft.DataCell(ft.Text(str(producto[5]), color="black")),
                             ft.DataCell(boton_eliminar)
                         ]
@@ -131,7 +133,7 @@ def empleado_registrar_venta_view(page):
 
     # Header y menú lateral
     header = header_empleado(user, page, dlg_venta)
-    menu_lateral = menu_lateral_empleado()
+    menu_lateral = menu_lateral_encargado()
 
     # Texto para la fecha y para el usuario
     fecha_actual = datetime.now().date()
@@ -143,7 +145,7 @@ def empleado_registrar_venta_view(page):
     )
 
     user_text = ft.Text(
-        f'Empleado: {user["nombre"]}',
+        f'Admin: {user["nombre"]}',
         color="white",
         bgcolor="#8285a2",
         weight=ft.FontWeight.BOLD
@@ -189,8 +191,8 @@ def empleado_registrar_venta_view(page):
         columns=[
             ft.DataColumn(ft.Text("Producto", color="white")),
             ft.DataColumn(ft.Text("Cantidad", color="white")),
-            ft.DataColumn(ft.Text("Precio Unitario", color="white")),
-            ft.DataColumn(ft.Text("Subtotal", color="white")),
+            ft.DataColumn(ft.Text("Costo Unitario", color="white")),
+            ft.DataColumn(ft.Text("Costo", color="white")),
             ft.DataColumn(ft.Text("Stock Actual", color="white")),
             ft.DataColumn(ft.Text("Eliminar", color="white"))
         ],
@@ -211,7 +213,7 @@ def empleado_registrar_venta_view(page):
     container_venta = ft.Container(
         content=ft.Row(
             controls=[
-                ft.ElevatedButton("REGISTRAR VENTA", on_click=registrar_venta),
+                ft.ElevatedButton("REGISTRAR COMPRA", on_click=registrar_compra),
                 ft.ElevatedButton("LIMPIAR", on_click=limpiar)
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -281,12 +283,21 @@ def empleado_registrar_venta_view(page):
     resetear_buscador()
 
     return ft.View(
-        route="/empladoRegistrarVenta",
+        route="/admin_registrar_compra",
         controls=[layout, dlg_venta],
         bgcolor="#cdf3ff",
         padding=0,
         appbar=None,
     )
 
+def main(page: ft.Page):
+    page.title = "Dashboard"
+    page.bgcolor = "#f2f7fb"
+    page.views.clear()
+    page.views.append(admin_registrar_compra(page))
+    page.update()
+
+
+ft.app(target=main)
 
 

@@ -1,8 +1,4 @@
-from os.path import curdir
 
-from oauthlib.uri_validate import query
-
-from papeleria_app.models.venta import Venta
 from papeleria_app.database.connection import get_connection
 
 from datetime import datetime, timedelta
@@ -161,6 +157,152 @@ def obtener_num_venta_actual():
     except Exception as e:
         print(f"Error al obtener la venta actual: {e}")
         return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+
+def ventas_semana_actual():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = """
+        SELECT 
+        DAYNAME(fecha_venta) AS dia_semana,
+        COUNT(*) AS total_ventas,
+        SUM(v.cantidad*p.precio_unitario_venta) AS total_ingresos,
+        Sum(v.cantidad*p.precio_unitario_venta) - Sum(v.cantidad*p.precio_unitario_compra) as ganancia_neta
+        FROM Ventas as v
+        Inner Join productos as p On p.id_producto = v.productoId
+        WHERE WEEK(fecha_venta, 1) = WEEK(CURRENT_DATE(), 1)
+        AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
+        GROUP BY dia_semana
+        ORDER BY FIELD(dia_semana, 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday');
+        """
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return resultados
+
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+def ventas_semana_pasada():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = """
+        SELECT 
+        DAYNAME(fecha_venta) AS dia_semana,
+        COUNT(*) AS total_ventas,
+        SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
+        SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
+        FROM Ventas AS v
+        INNER JOIN productos AS p ON p.id_producto = v.productoId
+        WHERE WEEK(fecha_venta, 1) = WEEK(CURRENT_DATE(), 1) - 1
+          AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
+        GROUP BY dia_semana
+        ORDER BY FIELD(dia_semana, 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday');
+        """
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return resultados
+
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+
+def ventas_mes_actual():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = """
+        SELECT 
+            CEIL(DAY(fecha_venta) / 7) AS semana_del_mes,
+            COUNT(*) AS total_ventas,
+            SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
+            SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
+        FROM Ventas AS v
+        INNER JOIN productos AS p ON p.id_producto = v.productoId
+        WHERE MONTH(fecha_venta) = MONTH(CURRENT_DATE())
+          AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
+        GROUP BY semana_del_mes
+        ORDER BY semana_del_mes;
+        """
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return resultados
+
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+
+def ventas_trimestre_actual():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = """
+        SELECT 
+            MONTH(fecha_venta) AS mes,
+            COUNT(*) AS total_ventas,
+            SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
+            SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
+        FROM Ventas AS v
+        INNER JOIN productos AS p ON p.id_producto = v.productoId
+        WHERE fecha_venta >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH)
+          AND MONTH(fecha_venta) <= MONTH(CURRENT_DATE())
+          AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
+        GROUP BY mes
+        ORDER BY mes;
+        """
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return resultados
+
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+
+def consultar_ventas_por_fecha(opcion_fecha):
+    fecha_inicio, fecha_fin = obtener_filtro_fecha(opcion_fecha)
+    try:
+        conn =  get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            Select MAX(v.fecha_venta) as Fecha, v.numVenta as Venta, SUM(p.precio_unitario_venta*v.cantidad) as Total,
+            SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
+            From Ventas as v
+            INNER JOIN productos as p On v.productoId = p.id_producto
+            WHERE DATE(v.fecha_venta) BETWEEN %s AND %s
+            GROUP BY v.numVenta
+            ORDER BY Fecha DESC
+        """
+
+        cursor.execute(query, (fecha_inicio, fecha_fin))
+        resultados = cursor.fetchall()
+
+        conn.close()
+        return resultados
+    except Exception as e:
+        mensaje = f'Ha ocurrido un error inesperado {e}'
+        return None, mensaje
+
     finally:
         if 'conn' in locals():
             conn.close()

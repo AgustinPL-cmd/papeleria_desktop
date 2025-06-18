@@ -21,13 +21,20 @@ def formatear_fecha_relativa(fecha_venta: datetime) -> str:
 
 # Función que regresa la vista del empleado
 def empleado_dashboard_view(page):
-    #Alert View
+    dlg_usuario = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Cargando..."),
+        content=ft.Text("Espere un momento"),
+        actions=[ft.TextButton("Cerrar", on_click=lambda e: None)]
+    )
+
     dlg_venta = ft.AlertDialog(
         modal=True,
-        title=ft.Text(""),  #
-        content=ft.Text(""),
-        actions=[]
+        title=ft.Text("Detalle de venta"),
+        content=ft.Text("Espere un momento..."),
+        actions=[ft.TextButton("Cerrar", on_click=lambda e: None)]
     )
+
 
     page.dialog = dlg_venta  # Asignarlo desde el inicio
 
@@ -155,7 +162,7 @@ def empleado_dashboard_view(page):
 
 
     # Header
-    header = header_empleado(user)
+    header = header_empleado(user, page, dlg_usuario)
 
     #Menu Lateral
     menu_lateral = menu_lateral_empleado()
@@ -200,7 +207,7 @@ def empleado_dashboard_view(page):
     # Contenedor para la tabla con scroll
     tabla_container = ft.Container(
         content=ft.Column(
-            controls=[tabla_ventas],
+            controls=[filtro_fecha_dropdown,tabla_ventas],
             scroll=ft.ScrollMode.ALWAYS,
             expand=True
         ),
@@ -244,7 +251,6 @@ def empleado_dashboard_view(page):
                     content=ft.Row(
                         controls=[
                             mensaje_ventas,
-                            filtro_fecha_dropdown,
                         ],
                         spacing=10,
                     ),
@@ -288,7 +294,7 @@ def empleado_dashboard_view(page):
 
     return ft.View(
         route="/empleadoDashboard",
-        controls=[layout, dlg_venta],
+        controls=[layout, dlg_venta, dlg_usuario],
         bgcolor="#cdf3ff",
         padding=0,
         appbar=None,
