@@ -10,6 +10,8 @@ from papeleria_app.ui.pages.empleado_dashboard_view import empleado_dashboard_vi
 from papeleria_app.ui.pages.empleado_registrar_venta_view import empleado_registrar_venta_view
 from papeleria_app.ui.pages.inicio_view import inicio_view
 from papeleria_app.ui.pages.login_view import login_view
+from papeleria_app.ui.pages.sugerencias_view import sugerencias_view
+
 
 def main(page: ft.Page):
     def route_change(e):
@@ -43,6 +45,9 @@ def main(page: ft.Page):
         elif page.route == "/admin_registrar_compra":
             page.views.clear()
             page.views.append(admin_registrar_compra(page))
+        elif page.route == "/sugerencias":
+            page.views.clear()
+            page.views.append(sugerencias_view(page))
         page.update()
 
     page.on_route_change = route_change

@@ -7,7 +7,8 @@ class Container_form:
                 controls=components,
                 spacing=20,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                alignment=ft.MainAxisAlignment.CENTER
+                alignment=ft.MainAxisAlignment.CENTER,
+                scroll=ft.ScrollMode.ALWAYS
             ),
             padding=20,
             width=width,

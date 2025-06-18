@@ -290,14 +290,6 @@ def admin_registrar_compra(page):
         appbar=None,
     )
 
-def main(page: ft.Page):
-    page.title = "Dashboard"
-    page.bgcolor = "#f2f7fb"
-    page.views.clear()
-    page.views.append(admin_registrar_compra(page))
-    page.update()
 
-
-ft.app(target=main)
 
 

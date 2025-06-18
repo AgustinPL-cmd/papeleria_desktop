@@ -15,6 +15,8 @@ def menu_lateral_encargado():
             e.page.go("/admin_gestionar_venta")
         elif button == "REGISTRAR COMPRA":
             e.page.go("/admin_registrar_compra")
+        elif button == "VER COMENTARIOS":
+            e.page.go("/sugerencias")
         else:
             e.page.go("/empleadoRegistrarSugerencia")
 
@@ -34,9 +36,9 @@ def menu_lateral_encargado():
                                      hover_color="#231f20", icon_size=32, tooltip="GESTIONAR VENTAS",
                                      on_click=lambda e: go_empleado(e, "GESTIONAR VENTAS"))
 
-    alertas_button = ft.IconButton(icon=ft.Icons.WARNING_AMBER_ROUNDED, bgcolor="#8e7db4", icon_color="#cdf3ff",
-                                  hover_color="#231f20", icon_size=32, tooltip="ALERTAS",
-                                  on_click=lambda e: go_empleado(e, "REGISTRAR COMENTARIO"))
+    comentarios_button = ft.IconButton(icon=ft.Icons.WARNING_AMBER_ROUNDED, bgcolor="#8e7db4", icon_color="#cdf3ff",
+                                  hover_color="#231f20", icon_size=32, tooltip="VER COMENTARIOS",
+                                  on_click=lambda e: go_empleado(e, "VER COMENTARIOS"))
 
     compra_button = ft.IconButton(icon=ft.Icons.SHOPPING_CART, bgcolor="#8e7db4", icon_color="#cdf3ff",
                                    hover_color="#231f20", icon_size=32, tooltip="REGISTRAR COMPRA",
@@ -45,7 +47,7 @@ def menu_lateral_encargado():
 
     menu_lateral = ft.Container(
         content=ft.Column(
-            controls=[home_button, empleados_button, productos_button, ventas_button, alertas_button, compra_button ],
+            controls=[home_button, empleados_button, productos_button, ventas_button, comentarios_button, compra_button ],
             spacing=20,
             alignment=ft.MainAxisAlignment.START,
             expand=True
