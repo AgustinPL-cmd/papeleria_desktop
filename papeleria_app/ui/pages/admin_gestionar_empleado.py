@@ -13,6 +13,8 @@ from papeleria_app.repositorios.usuario_repo import (
     ventas_empleado_trimestre_actual
 )
 from papeleria_app.ui.components.pieChartEmpleados import GraficaPieVentas
+from papeleria_app.ui.pages.alta_de_empleados_view import alta_empleado_view
+
 
 
 def admin_gestionar_empleado(page):
@@ -107,13 +109,19 @@ def admin_gestionar_empleado(page):
                     padding=20
                 )
             ),
-
+            ft.Tab(
+                text="Registrar Empleado",
+                content=ft.Container(
+                    content=alta_empleado_view(page),
+                    padding=20,
+                    expand=True
+                )
+            )
         ],
         expand=True,
         label_color="#090040",
         unselected_label_color="#03A6A1"
     )
-
 
     layout = ft.Row(
         controls=[

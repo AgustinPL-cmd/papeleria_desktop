@@ -173,3 +173,32 @@ def ventas_empleado_trimestre_actual():
     finally:
         if conn and conn.is_connected():
             conn.close()
+
+
+def insert_empleado(usuario):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = (
+            "INSERT INTO Usuarios (nombre, contrasena, rol, activo) "
+            "VALUES (%s, %s, %s, %s)"
+        )
+
+        cursor.execute(query, (
+            usuario.nombre,
+            usuario.contrasena,        # aquí va la contraseña tal cual
+            usuario.rol,
+            usuario.activo
+        ))
+
+        conn.commit()
+        return True, "Empleado insertado correctamente."
+
+    except Exception as e:
+        print(f"Error al insertar empleado: {e}")
+        return False, f"Error al insertar empleado: {e}"
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
