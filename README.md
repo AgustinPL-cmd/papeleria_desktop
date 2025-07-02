@@ -17,7 +17,7 @@ Sistema para administrar inventario, pedidos y reportes de materiales de oficina
 
 <!-- {#tecnologías} -->
 🛠️ **Stack técnico**:  
-```diff
+
 + Frontend: Flet(Python)(#frontend)  
 + Backend: Python (#microservicios)  
 + DB: MySql (#nosql)  
@@ -36,7 +36,6 @@ Sistema para administrar inventario, pedidos y reportes de materiales de oficina
 ---
 
 ## 📦 Módulos Principales  
-```diff
 + repositorios/       # Lógica backend donde se llevana a cabo las consultas sql
 + ui/         # Sección FrontEnd en donde se ven las diferentes vistas del programa y se integra con el backend
 + models/      # Sección de las entidades de la BD convertidas en clases
