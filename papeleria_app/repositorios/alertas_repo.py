@@ -8,12 +8,12 @@ def obtener_alertas_inventario():
         query = """
             SELECT 
                 p.nombre_producto,
-                a.stock_actual,
-                a.stock_minimo,
+                p.stock_actual,
+                p.stock_minimo,
                 a.estado,
                 a.fecha_alerta
-            FROM AlertasInventario a
-            INNER JOIN Productos p ON a.id_producto = p.id_producto
+            FROM alertasinventario a
+            INNER JOIN productos p ON a.productoId = p.id_producto
             WHERE a.estado = 'pendiente'
             ORDER BY a.fecha_alerta DESC
         """

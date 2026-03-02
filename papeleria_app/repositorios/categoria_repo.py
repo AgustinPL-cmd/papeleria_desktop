@@ -8,7 +8,7 @@ def get_categorias():
     try:
         conn = get_connection()
         cursor = conn.cursor(buffered=True)  # Usar cursor buffered
-        query = "SELECT id_categoria, nombre_categoria FROM Categorias"
+        query = "SELECT id_categoria, nombre_categoria FROM categorias"
         cursor.execute(query)
 
         # Consumir todos los resultados inmediatamente
@@ -30,7 +30,11 @@ def get_categoria_by_name(categoria_nombre):
     try:
         conn = get_connection()
         cursor = conn.cursor(buffered=True)  # Usar cursor buffered
-        query = "SELECT id_categoria, nombre_categoria FROM Categorias WHERE nombre_categoria = %s"
+        query = """
+        SELECT id_categoria, nombre_categoria 
+        FROM categorias 
+        WHERE nombre_categoria = %s
+        """
         cursor.execute(query, (categoria_nombre,))
 
         # Consumir el resultado inmediatamente

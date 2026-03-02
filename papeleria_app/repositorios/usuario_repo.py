@@ -72,8 +72,8 @@ def ventas_empleado_semana_actual():
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
         FROM Ventas v
-        INNER JOIN Productos p ON p.id_producto = v.productoId
-        INNER JOIN Usuarios u ON u.id_usuario = v.usuarioId
+        INNER JOIN productos p ON p.id_producto = v.productoId
+        INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE WEEK(v.fecha_venta, 1) = WEEK(CURRENT_DATE(), 1)
           AND YEAR(v.fecha_venta) = YEAR(CURRENT_DATE())
         GROUP BY u.nombre, dia_semana
@@ -100,8 +100,8 @@ def ventas_empleado_semana_pasada():
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
         FROM Ventas v
-        INNER JOIN Productos p ON p.id_producto = v.productoId
-        INNER JOIN Usuarios u ON u.id_usuario = v.usuarioId
+        INNER JOIN productos p ON p.id_producto = v.productoId
+        INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE WEEK(v.fecha_venta, 1) = WEEK(CURRENT_DATE(), 1) - 1
           AND YEAR(v.fecha_venta) = YEAR(CURRENT_DATE())
         GROUP BY u.nombre, dia_semana
@@ -129,8 +129,8 @@ def ventas_empleado_mes_actual():
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
         FROM Ventas v
-        INNER JOIN Productos p ON p.id_producto = v.productoId
-        INNER JOIN Usuarios u ON u.id_usuario = v.usuarioId
+        INNER JOIN productos p ON p.id_producto = v.productoId
+        INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE MONTH(v.fecha_venta) = MONTH(CURRENT_DATE())
           AND YEAR(v.fecha_venta) = YEAR(CURRENT_DATE())
         GROUP BY u.nombre, semana
@@ -158,8 +158,8 @@ def ventas_empleado_trimestre_actual():
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
         FROM Ventas v
-        INNER JOIN Productos p ON p.id_producto = v.productoId
-        INNER JOIN Usuarios u ON u.id_usuario = v.usuarioId
+        INNER JOIN productos p ON p.id_producto = v.productoId
+        INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE QUARTER(v.fecha_venta) = QUARTER(CURRENT_DATE())
           AND YEAR(v.fecha_venta) = YEAR(CURRENT_DATE())
         GROUP BY u.nombre, mes
@@ -181,7 +181,7 @@ def insert_empleado(usuario):
         cursor = conn.cursor()
 
         query = (
-            "INSERT INTO Usuarios (nombre, contrasena, rol, activo) "
+            "INSERT INTO usuarios (nombre, contrasena, rol, activo) "
             "VALUES (%s, %s, %s, %s)"
         )
 

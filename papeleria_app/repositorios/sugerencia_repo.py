@@ -7,7 +7,7 @@ def obtener_sugerencias():
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM SugerenciasClientes")
+        cursor.execute("SELECT * FROM sugerenciasClientes")
         for row in cursor.fetchall():
             sugerencias.append(SugerenciaCliente(*row))
     except Exception as e:
@@ -21,7 +21,7 @@ def eliminar_sugerencia(id_sugerencia):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM SugerenciasClientes WHERE id_sugerencia = %s", (id_sugerencia,))
+        cursor.execute("DELETE FROM sugerenciasClientes WHERE id_sugerencia = %s", (id_sugerencia,))
         conn.commit()
     except Exception as e:
         print(f"❌ Error al eliminar sugerencia: {e}")

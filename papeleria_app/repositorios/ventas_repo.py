@@ -28,7 +28,7 @@ def consultar_ventas_por_fecha_empleado(opcion_fecha, id_user):
 
         query = """
             Select MAX(v.fecha_venta) as Fecha, v.numVenta as Venta, SUM(p.precio_unitario_venta*v.cantidad) as Total
-            From Ventas as v
+            From ventas as v
             INNER JOIN productos as p On v.productoId = p.id_producto
             WHERE DATE(v.fecha_venta) BETWEEN %s AND %s AND v.usuarioId = %s
             GROUP BY v.numVenta
@@ -57,7 +57,7 @@ def obtener_ventas_por_dia_empleado(usuario_id):
         SELECT 
             DAYNAME(v.fecha_venta) AS dia_semana,
             SUM(v.cantidad*p.precio_unitario_venta) AS total_vendido
-        FROM Ventas v
+        FROM ventas v
         INNER JOIN productos as p On p.id_producto = v.productoId
         WHERE  v.usuarioId = %s
             AND YEARWEEK(v.fecha_venta, 1) = YEARWEEK(CURDATE(), 1)
@@ -104,7 +104,7 @@ def obtener_venta_by_numVenta(numVenta):
         query = """
             SELECT v.fecha_venta, v.cantidad, (v.cantidad*p.precio_unitario_venta) as Subtotal, 
             p.nombre_producto, p.precio_unitario_venta 
-            FROM Ventas as v
+            FROM ventas as v
             INNER JOIN productos as p On p.id_producto = v.productoId
             WHERE numVenta = %s
             ORDER BY p.precio_unitario_venta
@@ -129,7 +129,7 @@ def insertar_venta(fecha, cantidad, subtotal, numVenta, idProducto, idUsuario):
         conn = get_connection()
         cursor = conn.cursor()
         query = """
-        INSERT INTO VENTAS(fecha_venta, cantidad, subtotal, numVenta, productoId, usuarioId)
+        INSERT INTO ventas(fecha_venta, cantidad, subtotal, numVenta, productoId, usuarioId)
         values (%s, %s, %s, %s,%s, %s)
         """
         cursor.execute(query, (fecha, cantidad,subtotal, numVenta, idProducto, idUsuario))
@@ -148,7 +148,7 @@ def obtener_num_venta_actual():
         conn = get_connection()
         cursor = conn.cursor()
         query="""
-            SELECT MAX(numVenta) AS ultimo_numero_venta FROM Ventas
+            SELECT MAX(numVenta) AS ultimo_numero_venta FROM ventas
         """
         cursor.execute(query)
         resultado = cursor.fetchone()
@@ -172,7 +172,7 @@ def ventas_semana_actual():
         COUNT(*) AS total_ventas,
         SUM(v.cantidad*p.precio_unitario_venta) AS total_ingresos,
         Sum(v.cantidad*p.precio_unitario_venta) - Sum(v.cantidad*p.precio_unitario_compra) as ganancia_neta
-        FROM Ventas as v
+        FROM ventas as v
         Inner Join productos as p On p.id_producto = v.productoId
         WHERE WEEK(fecha_venta, 1) = WEEK(CURRENT_DATE(), 1)
         AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
@@ -200,7 +200,7 @@ def ventas_semana_pasada():
         COUNT(*) AS total_ventas,
         SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
         SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas AS v
+        FROM ventas AS v
         INNER JOIN productos AS p ON p.id_producto = v.productoId
         WHERE WEEK(fecha_venta, 1) = WEEK(CURRENT_DATE(), 1) - 1
           AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
@@ -229,7 +229,7 @@ def ventas_mes_actual():
             COUNT(*) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas AS v
+        FROM ventas AS v
         INNER JOIN productos AS p ON p.id_producto = v.productoId
         WHERE MONTH(fecha_venta) = MONTH(CURRENT_DATE())
           AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
@@ -258,7 +258,7 @@ def ventas_trimestre_actual():
             COUNT(*) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas AS v
+        FROM ventas AS v
         INNER JOIN productos AS p ON p.id_producto = v.productoId
         WHERE fecha_venta >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH)
           AND MONTH(fecha_venta) <= MONTH(CURRENT_DATE())
@@ -287,7 +287,7 @@ def consultar_ventas_por_fecha(opcion_fecha):
         query = """
             Select MAX(v.fecha_venta) as Fecha, v.numVenta as Venta, SUM(p.precio_unitario_venta*v.cantidad) as Total,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-            From Ventas as v
+            From ventas as v
             INNER JOIN productos as p On v.productoId = p.id_producto
             WHERE DATE(v.fecha_venta) BETWEEN %s AND %s
             GROUP BY v.numVenta

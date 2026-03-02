@@ -8,7 +8,7 @@ def insert_productos(nombre_producto, descripcion, precio_unitario_venta,
         cursor = conn.cursor()
 
         query = (
-            "INSERT INTO Productos (nombre_producto, descripcion, precio_unitario_venta, "
+            "INSERT INTO productos (nombre_producto, descripcion, precio_unitario_venta, "
             "precio_unitario_compra, stock_actual, stock_minimo, id_categoria) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s)"
         )
@@ -38,7 +38,7 @@ def buscar_coincidencias(producto):
         cursor = conn.cursor()
 
         query = """
-            SELECT * FROM Productos 
+            SELECT * FROM productos 
             WHERE nombre_producto LIKE %s;
         """
         # Agregamos % al inicio y final del término de búsqueda
@@ -64,7 +64,7 @@ def producto_popular_semana_actual():
         cursor = conn.cursor()
         query = """
         SELECT SUM(v.cantidad) as Cantidad, p.nombre_producto 
-        From productos as P 
+        From productos as p
         Inner Join ventas as v On p.id_producto = v.productoId
         Where WEEK(v.fecha_venta,1) = WEEK(current_date(),1)
         Group By p.nombre_producto 
@@ -160,7 +160,7 @@ def obtener_todos_productos() -> list:
 
         query = """
         SELECT p.*, c.nombre_categoria 
-        FROM Productos as p
+        FROM productos as p
         INNER JOIN categorias as c ON c.id_categoria = p.id_categoria
         ORDER BY p.precio_unitario_venta, p.stock_actual
         """
@@ -197,13 +197,13 @@ def aumentar_stock_producto(id_producto: int, cantidad: int) -> tuple:
         cursor = conn.cursor()
 
         # Primero verificamos que el producto exista
-        cursor.execute("SELECT id_producto FROM Productos WHERE id_producto = %s", (id_producto,))
+        cursor.execute("SELECT id_producto FROM productos WHERE id_producto = %s", (id_producto,))
         if not cursor.fetchone():
             return False, "El producto no existe"
 
         # Actualizamos el stock
         query = """
-        UPDATE Productos 
+        UPDATE productos 
         SET stock_actual = stock_actual + %s 
         WHERE id_producto = %s
         """
@@ -213,7 +213,7 @@ def aumentar_stock_producto(id_producto: int, cantidad: int) -> tuple:
         # Verificamos si el stock actual supera el mínimo después del aumento
         cursor.execute("""
         SELECT stock_actual, stock_minimo 
-        FROM Productos 
+        FROM productos 
         WHERE id_producto = %s
         """, (id_producto,))
         stock_actual, stock_minimo = cursor.fetchone()
