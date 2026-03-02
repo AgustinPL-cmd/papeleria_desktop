@@ -2,7 +2,7 @@ import flet as ft
 
 
 def inicio_view():
-    logo = ft.Image(src="images/logo_blanco.jpg", width=200, height=200)
+    logo = ft.Image(src="logo_blanco.jpg", width=200, height=200)
 
     layout = ft.Column(
         controls=[

@@ -48,10 +48,12 @@ def main(page: ft.Page):
         elif page.route == "/sugerencias":
             page.views.clear()
             page.views.append(sugerencias_view(page))
+        page.padding = 0
+        page.spacing = 0
         page.update()
 
     page.on_route_change = route_change
     page.go(page.route)
 
-ft.app(target=main)
+ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="images")
 

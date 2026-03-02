@@ -73,8 +73,8 @@ class GraficaLinealPorEmpleado:
 
         # Etiquetas del eje X
         etiquetas_dict = {
-            "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
-            "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"
+            "Monday": "Lun", "Tuesday": "Mar", "Wednesday": "Miér",
+            "Thursday": "Juev", "Friday": "Vier", "Saturday": "Sáb", "Sunday": "Dom"
         }
 
         if self.tipo_x == 'dia':

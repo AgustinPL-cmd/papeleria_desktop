@@ -21,6 +21,18 @@ def formatear_fecha_relativa(fecha_venta: datetime) -> str:
 
 # Función que regresa la vista del empleado
 def empleado_dashboard_view(page):
+    dias_cortos = {
+        "Lunes": "Lun",
+        "Martes": "Mar",
+        "Miércoles": "Miér",
+        "Miercoles": "Miér",  # por si viene sin tilde
+        "Jueves": "Jue",
+        "Viernes": "Vie",
+        "Sábado": "Sáb",
+        "Sabado": "Sáb",
+        "Domingo": "Dom",
+    }
+
     dlg_usuario = ft.AlertDialog(
         modal=True,
         title=ft.Text("Cargando..."),
@@ -84,16 +96,23 @@ def empleado_dashboard_view(page):
                 ],
             )
         )
+
+        dia_corto = dias_cortos.get(dia, dia)
+
         bottom_labels.append(
             ft.ChartAxisLabel(
                 value=i,
-                label=ft.Container(ft.Text(dia, color="black"), padding=10)
+                label=ft.Container(
+                    content=ft.Text(dia_corto, color="black", size=14),
+                    padding=5
+                )
             )
         )
 
     #Gráfica de ventas por día
     chart = ft.BarChart(
         bar_groups=bar_groups,
+        groups_space=60,
         border=ft.border.all(1, "#8e7db4"),
         left_axis=ft.ChartAxis(
             labels_size=40,
@@ -233,7 +252,7 @@ def empleado_dashboard_view(page):
             ft.Container(
                 content=chart,
                 height=400,  # Altura fija para la gráfica
-                width=600,  # Ancho fijo para la gráfica
+                expand=True,  # Ancho fijo para la gráfica
                 border=ft.border.all(1, "#8e7db4"),
                 border_radius=10,
                 padding=10
@@ -246,6 +265,7 @@ def empleado_dashboard_view(page):
     # Contenido principal
     contenido_principal = ft.Container(
         content=ft.Column(
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Container(
                     content=ft.Row(
@@ -256,12 +276,13 @@ def empleado_dashboard_view(page):
                     ),
                     padding=ft.padding.only(bottom=10),
                 ),
-                ft.Row(
-                    controls=[
-                        tabla_container,
-                        grafica_con_titulo
 
+                ft.ResponsiveRow(
+                    controls=[
+                        ft.Container(tabla_container, col={"xs": 12, "md": 6}),
+                        ft.Container(grafica_con_titulo, col={"xs": 12, "md": 6}),
                     ],
+
                     expand=True,
                     spacing=20,
                 )
@@ -275,6 +296,8 @@ def empleado_dashboard_view(page):
 
 
     layout = ft.Row(
+        expand=True,
+        vertical_alignment=ft.CrossAxisAlignment.STRETCH,
         controls= [
             menu_lateral,
             ft.Column(
@@ -286,7 +309,6 @@ def empleado_dashboard_view(page):
                 expand=True
             )
         ],
-        expand=True,
         spacing=5
     )
 
@@ -298,8 +320,7 @@ def empleado_dashboard_view(page):
         bgcolor="#cdf3ff",
         padding=0,
         appbar=None,
-
-
+        scroll=None,
     )
 
 

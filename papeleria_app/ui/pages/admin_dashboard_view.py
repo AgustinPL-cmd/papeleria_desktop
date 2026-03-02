@@ -134,7 +134,8 @@ def admin_dashboard_view(page: ft.Page):
         bgcolor=ft.Colors.WHITE,
         border_radius=20,
         height=400,
-        width=550
+        width=400,
+        clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
 
     column_empleados = ft.Column(
@@ -150,6 +151,7 @@ def admin_dashboard_view(page: ft.Page):
 
     contenido_principal = ft.Container(
         content=ft.Column(
+            scroll = ft.ScrollMode.AUTO,
             controls=[
                 botones_grafica_ventas,
                 container_grafica_venta,
@@ -162,7 +164,6 @@ def admin_dashboard_view(page: ft.Page):
                 )
             ],
             spacing=20,
-            scroll=ft.ScrollMode.AUTO,  # o ScrollMode.ALWAYS
             expand=True
         ),
         padding=30,

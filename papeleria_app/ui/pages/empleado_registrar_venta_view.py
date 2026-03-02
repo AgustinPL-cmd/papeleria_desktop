@@ -187,15 +187,29 @@ def empleado_registrar_venta_view(page):
 
     tabla_productos = ft.DataTable(
         columns=[
-            ft.DataColumn(ft.Text("Producto", color="white")),
-            ft.DataColumn(ft.Text("Cantidad", color="white")),
-            ft.DataColumn(ft.Text("Precio Unitario", color="white")),
-            ft.DataColumn(ft.Text("Subtotal", color="white")),
-            ft.DataColumn(ft.Text("Stock Actual", color="white")),
-            ft.DataColumn(ft.Text("Eliminar", color="white"))
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Producto", color="white", text_align=ft.TextAlign.CENTER))),
+
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Cantidad", color="white", text_align=ft.TextAlign.CENTER))),
+
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Precio Unitario", color="white", text_align=ft.TextAlign.CENTER,
+                                                       max_lines=2))),
+
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Subtotal", color="white", text_align=ft.TextAlign.CENTER))),
+
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Stock Actual", color="white", text_align=ft.TextAlign.CENTER,
+                                                       max_lines=2))),
+
+            ft.DataColumn(ft.Container(width=40, alignment=ft.alignment.center,
+                                       content=ft.Text("Eliminar", color="white", text_align=ft.TextAlign.CENTER))),
         ],
         rows=[],
         heading_row_color="#8e7db4",
+        expand=True,
     )
 
     tabla_container = ft.Container(
@@ -224,6 +238,7 @@ def empleado_registrar_venta_view(page):
     # Layout principal
     contenido_principal = ft.Container(
         content=ft.Column(
+            scroll = ft.ScrollMode.AUTO,
             controls=[
                 ft.Row(
                     controls=[

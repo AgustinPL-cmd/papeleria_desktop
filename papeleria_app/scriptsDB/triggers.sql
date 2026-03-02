@@ -15,3 +15,16 @@ END $$
 DELIMITER ;
 
 
+DELIMITER $$
+
+CREATE TRIGGER tr_reducir_stock_venta
+AFTER INSERT ON Ventas
+FOR EACH ROW
+BEGIN
+    UPDATE Productos
+    SET stock_actual = stock_actual - NEW.cantidad
+    WHERE id_producto = NEW.productoId;
+END $$
+
+DELIMITER ;
+

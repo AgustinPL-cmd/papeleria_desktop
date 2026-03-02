@@ -14,7 +14,7 @@ def login_view():
         output.value = ""
         output.update()
 
-    header = Logo_header("images/logo_blanco.jpg").getHeader()
+    header = Logo_header("logo_blanco.jpg").getHeader()
 
     # Entradas de usuario y contraseña
     user_row = bti("USUARIO", on_change=limpiar_mensaje).getComponent()
