@@ -1,5 +1,5 @@
 import flet as ft
-
+import os
 from papeleria_app.ui.pages.admin_compra import admin_registrar_compra
 from papeleria_app.ui.pages.admin_gestionar_empleado import admin_gestionar_empleado
 from papeleria_app.ui.pages.admin_gestionar_productos import admin_gestionar_productos
@@ -55,5 +55,16 @@ def main(page: ft.Page):
     page.on_route_change = route_change
     page.go(page.route)
 
-ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="images")
 
+if __name__ == "__main__":
+    # Render nos da un puerto en la variable de entorno 'PORT'
+    # Si no existe (desarrollo local), usamos el 8502 por defecto
+    port = int(os.getenv("PORT", 8502))
+
+    ft.app(
+        target=main,
+        view=ft.AppView.WEB_BROWSER,
+        assets_dir="images",
+        host="0.0.0.0",  # Permite que el servidor web de Render se conecte a Flet
+        port=port
+    )
