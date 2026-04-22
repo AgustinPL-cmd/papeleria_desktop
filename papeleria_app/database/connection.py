@@ -4,11 +4,13 @@ from mysql.connector import errorcode
 def get_connection():
     try:
         cnx = mysql.connector.connect(
-            user="root",
-            password="12345",
-            host="localhost",
-            port=3306,
-            database="Papeleria_Marlons"
+            user="avnadmin",
+            password="AVNS_PABaDsGOCGohlv4zyPJ",
+            host="mysql-papeleria-pinonagustin3-e056.b.aivencloud.com",
+            port=10136,
+            database="defaultdb",
+            ssl_ca="ca.pem",
+            ssl_verify_cert=True
         )
         return cnx
     except mysql.connector.Error as err:
