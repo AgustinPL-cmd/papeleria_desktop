@@ -8,7 +8,7 @@ def get_connection():
             password="AVNS_PABaDsGOCGohlv4zyPJ",
             host="mysql-papeleria-pinonagustin3-e056.b.aivencloud.com",
             port=10136,
-            database="defaultdb",
+            database="papeleria_gomi",
             ssl_ca="papeleria_app/database/ca.pem",
             ssl_verify_cert=True
         )
