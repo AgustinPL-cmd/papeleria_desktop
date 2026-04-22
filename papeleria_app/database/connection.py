@@ -9,7 +9,7 @@ def get_connection():
             host="mysql-papeleria-pinonagustin3-e056.b.aivencloud.com",
             port=10136,
             database="defaultdb",
-            ssl_ca="ca.pem",
+            ssl_ca="papeleria_app/database/ca.pem",
             ssl_verify_cert=True
         )
         return cnx
