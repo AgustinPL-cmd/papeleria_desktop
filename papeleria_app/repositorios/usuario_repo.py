@@ -71,7 +71,7 @@ def ventas_empleado_semana_actual():
             Sum(v.cantidad) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas v
+        FROM ventas v
         INNER JOIN productos p ON p.id_producto = v.productoId
         INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE WEEK(v.fecha_venta, 1) = WEEK(CURRENT_DATE(), 1)
@@ -99,7 +99,7 @@ def ventas_empleado_semana_pasada():
             Sum(v.cantidad) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas v
+        FROM ventas v
         INNER JOIN productos p ON p.id_producto = v.productoId
         INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE WEEK(v.fecha_venta, 1) = WEEK(CURRENT_DATE(), 1) - 1
@@ -128,7 +128,7 @@ def ventas_empleado_mes_actual():
             COUNT(*) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas v
+        FROM ventas v
         INNER JOIN productos p ON p.id_producto = v.productoId
         INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE MONTH(v.fecha_venta) = MONTH(CURRENT_DATE())
@@ -157,7 +157,7 @@ def ventas_empleado_trimestre_actual():
             COUNT(*) AS total_ventas,
             SUM(v.cantidad * p.precio_unitario_venta) AS total_ingresos,
             SUM(v.cantidad * p.precio_unitario_venta) - SUM(v.cantidad * p.precio_unitario_compra) AS ganancia_neta
-        FROM Ventas v
+        FROM ventas v
         INNER JOIN productos p ON p.id_producto = v.productoId
         INNER JOIN usuarios u ON u.id_usuario = v.usuarioId
         WHERE QUARTER(v.fecha_venta) = QUARTER(CURRENT_DATE())

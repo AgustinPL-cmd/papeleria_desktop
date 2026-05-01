@@ -1,7 +1,11 @@
+import os
+
 import mysql.connector
 from mysql.connector import errorcode
 
 def get_connection():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    ca_path = os.path.join(current_dir, "ca.pem")
     try:
         cnx = mysql.connector.connect(
             user="avnadmin",
@@ -9,7 +13,7 @@ def get_connection():
             host="mysql-papeleria-pinonagustin3-e056.b.aivencloud.com",
             port=10136,
             database="papeleria_gomi",
-            ssl_ca="papeleria_app/database/ca.pem",
+            ssl_ca=ca_path,
             ssl_verify_cert=True
         )
         return cnx
