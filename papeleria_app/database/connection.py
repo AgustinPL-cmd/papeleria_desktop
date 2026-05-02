@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 import mysql.connector
 from mysql.connector import errorcode
@@ -6,13 +7,18 @@ from mysql.connector import errorcode
 def get_connection():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     ca_path = os.path.join(current_dir, "ca.pem")
+    DB_PASSWORD = os.getenv("AIVEN_DB_PASSWORD")
+    DB_USER = os.getenv("AIVEN_DB_USER")
+    DB_HOST = os.getenv("AIVEN_DB_HOST")
+    DB_PORT = os.getenv("AIVEN_DB_PORT")
+    DB_NAME = os.getenv("AIVEN_DB_NAME")
     try:
         cnx = mysql.connector.connect(
-            user="avnadmin",
-            password="AVNS_PABaDsGOCGohlv4zyPJ",
-            host="mysql-papeleria-pinonagustin3-e056.b.aivencloud.com",
-            port=10136,
-            database="papeleria_gomi",
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
             ssl_ca=ca_path,
             ssl_verify_cert=True
         )
