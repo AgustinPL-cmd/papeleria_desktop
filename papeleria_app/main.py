@@ -1,5 +1,13 @@
-import flet as ft
+from pathlib import Path
+from dotenv import load_dotenv
+
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
 import os
+
+
+import flet as ft
 from papeleria_app.ui.pages.admin_compra import admin_registrar_compra
 from papeleria_app.ui.pages.admin_gestionar_empleado import admin_gestionar_empleado
 from papeleria_app.ui.pages.admin_gestionar_productos import admin_gestionar_productos
@@ -11,7 +19,6 @@ from papeleria_app.ui.pages.empleado_registrar_venta_view import empleado_regist
 from papeleria_app.ui.pages.inicio_view import inicio_view
 from papeleria_app.ui.pages.login_view import login_view
 from papeleria_app.ui.pages.sugerencias_view import sugerencias_view
-
 
 def main(page: ft.Page):
     def route_change(e):
