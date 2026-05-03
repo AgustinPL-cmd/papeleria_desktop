@@ -202,3 +202,63 @@ def insert_empleado(usuario):
     finally:
         if 'conn' in locals():
             conn.close()
+
+def get_empleados():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = ("SELECT * FROM usuarios WHERE rol = 'empleado'")
+
+        cursor.execute(query)
+        return cursor.fetchall()
+    except Exception as e:
+        print(f"Error al buscar empleados: {e}")
+        return []
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+def get_empleado_by_id(empleado_id):
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = (
+            "SELECT * FROM usuarios WHERE id_usuario = %s"
+        )
+        cursor.execute(query, (empleado_id,))
+        return cursor.fetchone()
+    except Exception as e:
+        print(f"Error al buscar empleado: {e}")
+        return None
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+def update_usuario(usuario):
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = ("UPDATE usuarios SET nombre = %s, activo = %s WHERE id_usuario = %s AND rol = 'empleado'")
+
+        cursor.execute(query,(
+            usuario.nombre,
+            usuario.activo,
+            usuario.id_usuario
+        ))
+
+        conn.commit()
+        if cursor.rowcount > 0:
+            return True, "Empleado actualizado correctamente."
+        else:
+            return False, "Empleado inexistente o no hubo cambios"
+    except Exception as e:
+        print(f"Error al actualizar empleado: {e}")
+        return False, f"Error al actualizar empleado: {e}"
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
