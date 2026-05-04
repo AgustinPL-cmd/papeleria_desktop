@@ -30,7 +30,7 @@ def admin_gestionar_productos(page: ft.Page):
 
     header = header_empleado(user, page, dlg_usuario)
     menu_lateral = menu_lateral_encargado()
-    tabla_productos = ProductosTable(page)
+    tabla_productos = ProductosTable(page, on_editar_callback=lambda pid: abrir_dialogo_editar(pid))
 
     titulo_grafica_ventas = ft.Text("Ventas de esta semana", size=20, weight=ft.FontWeight.BOLD, color="#090040")
 
@@ -156,6 +156,103 @@ def admin_gestionar_productos(page: ft.Page):
 
     def limpiar_click(e):
         limpiar_formulario()
+
+    # Diálogo de edición de producto
+    def abrir_dialogo_editar(id_producto):
+        from papeleria_app.services.producto_service import obtener_producto_por_id, editar_producto
+
+        # Obtener datos del producto
+        producto = obtener_producto_por_id(id_producto)
+        if not producto:
+            mensaje_confirmacion.value = "Error: Producto no encontrado"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
+
+        # Obtener lista de categorías para el dropdown
+        from papeleria_app.repositorios.categoria_repo import get_categorias
+        categorias_lista = get_categorias()
+        opciones_categorias = [ft.dropdown.Option(cat) for cat in categorias_lista]
+
+        # Campos del formulario de edición
+        campo_nombre_edit = ft.TextField(label="Nombre del producto", value=producto['nombre_producto'], expand=True)
+        campo_desc_edit = ft.TextField(label="Descripción", value=producto['descripcion'] or "", expand=True,
+                                       multiline=True)
+        campo_precio_venta_edit = ft.TextField(label="Precio de venta", value=str(producto['precio_unitario_venta']),
+                                               expand=True)
+        campo_precio_compra_edit = ft.TextField(label="Precio de compra", value=str(producto['precio_unitario_compra']),
+                                                expand=True)
+        campo_stock_actual_edit = ft.TextField(label="Stock actual", value=str(producto['stock_actual']), expand=True)
+        campo_stock_minimo_edit = ft.TextField(label="Stock mínimo", value=str(producto['stock_minimo']), expand=True)
+        campo_categoria_edit = ft.Dropdown(
+            label="Categoría",
+            options=opciones_categorias,
+            value=producto['nombre_categoria'],
+            expand=True
+        )
+
+        # Mensaje de error/éxito dentro del diálogo
+        mensaje_dialogo = ft.Text("", color="red", size=12)
+
+        def guardar_edicion(e):
+            # Recolectar valores
+            nombre = campo_nombre_edit.value
+            descripcion = campo_desc_edit.value
+            precio_venta = campo_precio_venta_edit.value
+            precio_compra = campo_precio_compra_edit.value
+            stock_actual = campo_stock_actual_edit.value
+            stock_minimo = campo_stock_minimo_edit.value
+            categoria = campo_categoria_edit.value
+
+            # Validar campos obligatorios
+            if not nombre:
+                mensaje_dialogo.value = "El nombre del producto es obligatorio"
+                mensaje_dialogo.color = "red"
+                page.update()
+                return
+
+            # Llamar al servicio
+            exito, mensaje = editar_producto(
+                id_producto, nombre, descripcion, precio_venta, precio_compra,
+                stock_actual, stock_minimo, categoria
+            )
+
+            if exito:
+                # Cerrar diálogo
+                page.close(dialogo_edicion)
+                # Mostrar mensaje global
+                mensaje_confirmacion.value = mensaje
+                mensaje_confirmacion.color = "green"
+                # Recargar tabla
+                tabla_productos.recargar_datos()
+                page.update()
+            else:
+                mensaje_dialogo.value = mensaje
+                mensaje_dialogo.color = "red"
+                page.update()
+
+        # Crear el diálogo
+        dialogo_edicion = ft.AlertDialog(
+            title=ft.Text(f"Editar Producto: {producto['nombre_producto']}"),
+            content=ft.Container(
+                content=ft.Column([
+                    campo_nombre_edit,
+                    campo_desc_edit,
+                    ft.Row([campo_precio_venta_edit, campo_precio_compra_edit], spacing=10),
+                    ft.Row([campo_stock_actual_edit, campo_stock_minimo_edit], spacing=10),
+                    campo_categoria_edit,
+                    mensaje_dialogo,
+                ], spacing=15, height=400),
+                width=500,
+            ),
+            actions=[
+                ft.TextButton("Cancelar", on_click=lambda e: page.close(dialogo_edicion)),
+                ft.ElevatedButton("Guardar cambios", on_click=guardar_edicion, bgcolor="#090040", color="white"),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        page.open(dialogo_edicion)
 
     campo_nombre =bti("PRODUCTO", on_change=limpiar_errores).getComponent()
     campo_desc = bti("DESCRIPCIÓN", on_change=limpiar_errores).getComponent()
