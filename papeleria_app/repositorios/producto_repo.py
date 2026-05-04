@@ -20,6 +20,8 @@ def insert_productos(nombre_producto, descripcion, precio_unitario_venta,
         ))
 
         conn.commit()
+        if cursor.rowcount == 0:
+            return False, f"Error al insertar producto: {e}"
         return True, "Producto insertado correctamente."
 
     except Exception as e:
