@@ -14,6 +14,7 @@ from papeleria_app.ui.components.container_form import Container_form
 from papeleria_app.repositorios.categoria_repo import get_categorias
 from papeleria_app.ui.components.error_text import Error_text
 import papeleria_app.services.producto_service as producto_service
+from papeleria_app.services.producto_service import registrar_producto
 
 
 def admin_gestionar_productos(page: ft.Page):
@@ -104,35 +105,82 @@ def admin_gestionar_productos(page: ft.Page):
 
         page.update()
 
+    # Función que registra el producto
     def guardar_click(e):
-        exito, confirmacion = producto_service.registrar_producto(campos_registro, page)
-        mensaje_confirmacion.value = confirmacion
-        mensaje_confirmacion.color = "green" if exito else "red"
-        page.update()
+        "Limpiar mensajes de errores previos"
+        for msg in [mensaje_nombre, mensaje_descripcion, mensaje_precio_venta, mensaje_precio_compra, mensaje_stock_actual, mensaje_stock_minimo, mensaje_categoria]:
+            msg.value = ""
+            msg.visible = False
 
+        #Recolectar Valores
+        nombre = campo_nombre.controls[1].value
+        desc = campo_desc.controls[1].value
+        precio_venta = campo_precio_venta.controls[1].value
+        precio_compra = campo_precio_compra.controls[1].value
+        stock_actual = campo_stock_actual.controls[1].value
+        stock_min = campo_stock_min.controls[1].value
+        categoria = campo_categoria.controls[1].value
+
+        #Llamar al servicio
+        exito, mensaje = registrar_producto(nombre,desc,precio_venta,precio_compra,stock_actual,stock_min,categoria)
+
+        # Mostrar mensaje en la etiqueta de confirmación
+        mensaje_confirmacion.value = mensaje
+        mensaje_confirmacion.color = "green" if exito else "red"
+
+        if exito:
+            limpiar_formulario()
+        else:
+            page.update()
+
+        print(f"DEBUG: exito={exito}, mensaje='{mensaje}'")
+
+
+
+    def limpiar_formulario():
+        campo_nombre.controls[1].value = ""
+        campo_desc.controls[1].value = ""
+        campo_precio_venta.controls[1].value = ""
+        campo_precio_compra.controls[1].value = ""
+        campo_stock_actual.controls[1].value = ""
+        campo_stock_min.controls[1].value = ""
+        campo_categoria.controls[1].value = None
+
+        for msg in [mensaje_nombre, mensaje_descripcion, mensaje_precio_venta,
+                mensaje_precio_compra, mensaje_stock_actual, mensaje_stock_minimo,
+                mensaje_categoria]:
+            msg.value = ""
+            msg.visible = False
+
+        page.update()
 
     def limpiar_click(e):
-        for campo in campos_registro:
-            if hasattr(campo, 'value'):
-                campo.value = ""
-        mensaje_confirmacion.value = ""
-        page.update()
+        limpiar_formulario()
+
+    campo_nombre =bti("PRODUCTO", on_change=limpiar_errores).getComponent()
+    campo_desc = bti("DESCRIPCIÓN", on_change=limpiar_errores).getComponent()
+    campo_precio_venta = bti("PRECIO DE VENTA", on_change=limpiar_errores).getComponent()
+    campo_precio_compra = bti("PRECIO DE COMPRA", on_change=limpiar_errores).getComponent()
+    campo_stock_actual = bti("STOCK ACTUAL", on_change=limpiar_errores).getComponent()
+    campo_stock_min = bti("STOCK MÍNIMO", on_change=limpiar_errores).getComponent()
+    campo_categoria = bti("CATEGORIA", categorias_nombre, on_change=limpiar_errores).getComponent()
 
     campos_registro = [
-        bti("PRODUCTO", on_change=limpiar_errores).getComponent(),
+        campo_nombre,
         mensaje_nombre,
-        bti("DESCRIPCIÓN", on_change=limpiar_errores).getComponent(),
+        campo_desc,
         mensaje_descripcion,
-        bti("PRECIO DE VENTA", on_change=limpiar_errores).getComponent(),
+        campo_precio_venta,
         mensaje_precio_venta,
-        bti("PRECIO DE COMPRA", on_change=limpiar_errores).getComponent(),
+        campo_precio_compra,
         mensaje_precio_compra,
-        bti("STOCK ACTUAL", on_change=limpiar_errores).getComponent(),
+        campo_stock_actual,
         mensaje_stock_actual,
-        bti("STOCK MÍNIMO", on_change=limpiar_errores).getComponent(),
+        campo_stock_min,
         mensaje_stock_minimo,
-        bti("CATEGORIA", categorias_nombre, on_change=limpiar_errores).getComponent(),
+        campo_categoria,
         mensaje_categoria,
+        mensaje_confirmacion
     ]
 
     inputs_registro = ft.Column(

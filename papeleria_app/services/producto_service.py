@@ -1,83 +1,65 @@
 from papeleria_app.repositorios.producto_repo import insert_productos
 from papeleria_app.repositorios.categoria_repo import get_categoria_by_name
-import flet as ft
+import re
 
-def registrar_producto(campos, page):
-    error = validaciones_campos_insert(campos, page)
-    if not error:
-        valores = {}
-        for i, campo in enumerate(campos):
-            if isinstance(campo, ft.Row):
-                etiqueta = campo.controls[0].value.replace(":", "")
-                input_box = campo.controls[1]
+def validar_nombre_producto(nombre_producto):
+    pattern = re.compile(r"^[a-zA-ZáéíóúÁÉÍÓÚ0-9\s\.\-]+$")
+    if not nombre_producto or not nombre_producto.strip():
+        return False, "El producto no puede estár vacío"
 
-                if isinstance(input_box, ft.TextField) or isinstance(input_box, ft.Dropdown):
-                    valor = input_box.value.strip() if isinstance(input_box, ft.TextField) else input_box.value
-                    valores[etiqueta] = valor
+    if not re.match(pattern, nombre_producto):
+        return False, "Producto Inválido"
 
-        # Validar existencia de categoría
-        categoria = get_categoria_by_name(valores.get("CATEGORIA"))
-        if categoria is None:
-            return False, f"Categoría '{valores.get('CATEGORIA')}' no existe en la base de datos."
+    return True, ""
 
-        # Pasar los datos al servicio
-        resultado, mensaje = insert_productos(
-            nombre_producto=valores.get("PRODUCTO"),
-            descripcion=valores.get("DESCRIPCIÓN"),
-            precio_unitario_venta=valores.get("PRECIO DE VENTA"),
-            precio_unitario_compra=valores.get("PRECIO DE COMPRA"),
-            stock_actual=valores.get("STOCK ACTUAL"),
-            stock_minimo=valores.get("STOCK MÍNIMO"),
-            id_categoria= categoria.id_categoria
-        )
+def validar_precio(precio, campo):
+    try:
+        valor = float(precio)
+    except ValueError:
+        return False, f"{campo} Inválido", 0.0
 
-        # Mostrar mensaje
-        return True, mensaje
+    if valor <= 0:
+        return False, f"El {campo} debe ser mayor a 0.", 0.0
+
+    return True, "", valor
+
+def validar_stock(stock, campo):
+    try:
+        valor = int(stock)
+    except ValueError:
+        return False, "Stock Inválido", 0
+
+    if valor < 0:
+        return False, "El stock debe ser igual o mayor a 0.", 0
+
+    return True, "", valor
 
 
+def registrar_producto(nombre, descripcion, precio_venta, precio_compra, stock_actual, stock_minimo, categoria_nombre):
+    bool_nombre, msg_nombre = validar_nombre_producto(nombre)
+    if not bool_nombre: return bool_nombre, msg_nombre
 
-def validaciones_campos_insert(campos,page):
-    error = False
-    campos_numericos = ["PRECIO DE VENTA", "PRECIO DE COMPRA", "STOCK ACTUAL", "STOCK MÍNIMO"]
+    bool_precio_venta, msg_precio_venta, precio_venta_float = validar_precio(precio_venta, "precio de venta")
+    if not bool_precio_venta: return bool_precio_venta, msg_precio_venta
 
-    # Recorrer los campos en campos
-    for i, campo in enumerate(campos):
-        # Si el campo es de tipo Row
-        if isinstance(campo, ft.Row):
-            # Accede a su controls (text y textfield)
-            etiqueta = campo.controls[0].value.replace(":", "")  # Elimina los ":" al final
-            input_box = campo.controls[1]
+    bool_precio_compra, msg_precio_compra, precio_compra_float = validar_precio(precio_compra, "precio de compra")
+    if not bool_precio_compra: return bool_precio_compra, msg_precio_compra
 
-            # Si input_box es textfield
-            if isinstance(input_box, ft.TextField):
-                valor = input_box.value.strip()
+    bool_stock_actual, msg_precio_actual, stock_actual_int = validar_stock(stock_actual, "stock actual")
+    if not bool_stock_actual: return bool_stock_actual, msg_precio_actual
 
-                # Validar campo vacío
-                if valor == "":
-                    campos[i + 1].visible = True
-                    campos[i + 1].value = f"Error: el campo '{etiqueta}' no puede estar vacío.\n"
-                    error = True
-                # Validar que no sea menor a 0 si es numérico
-                elif etiqueta in campos_numericos:
-                    try:
-                        numero = float(valor)
-                        if numero < 0:
-                            campos[i + 1].visible = True
-                            campos[i + 1].value = f"Error: el campo '{etiqueta}' no puede ser menor a 0.\n"
-                            error = True
+    bool_stock_min, msg_stock_min, stock_min_int = validar_stock(stock_minimo, "stock_minimo")
+    if not bool_stock_min: return bool_stock_min, msg_stock_min
 
-                    except ValueError:
-                        campos[i + 1].visible = True
-                        campos[i + 1].value = f"Error: el campo '{etiqueta}' debe ser un número.\n"
-                        error = True
-            elif isinstance(input_box, ft.Dropdown):
-                valor = input_box.value
-                if valor == None:
-                    campos[i + 1].visible = True
-                    campos[i + 1].value = f"Error: el campo '{etiqueta}' no puede estar vacío.\n"
-                    error = True
+    if precio_venta_float < precio_compra_float: return False, "El precio de venta no puede ser menor al precio de compra."
 
-    page.update()
-    return error
+    if not categoria_nombre: return False, "Categoría Obligatoria"
+
+    categoria_id = get_categoria_by_name(categoria_nombre).id_categoria
+
+    resultado, mensaje = insert_productos(nombre, descripcion, precio_venta_float, precio_compra_float, stock_actual_int, stock_min_int, categoria_id)
+
+
+    return resultado, mensaje
 
 
