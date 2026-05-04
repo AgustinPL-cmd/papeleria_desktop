@@ -240,3 +240,54 @@ def aumentar_stock_producto(id_producto: int, cantidad: int) -> tuple:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
+
+def get_producto_by_id(id_producto: int) -> dict | None:
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT * FROM productos WHERE id_producto = %s
+        """
+
+        cursor.execute(query, (id_producto,))
+
+        return cursor.fetchone()
+
+    except Exception as e:
+        print(f"Error al obtener producto: {e}")
+        return None
+
+    finally:
+        if 'conn' in locals() and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+def update_producto(id_prod, nombre, descripcion, precio_venta, precio_compra, stock_inicial, stock_minimo, categoria_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        UPDATE productos SET nombre_producto=%s, descripcion=%s, precio_unitario_venta=%s, precio_unitario_compra=%s, stock_actual=%s, stock_minimo=%s, id_categoria=%s 
+        WHERE id_producto = %s
+        """
+
+        cursor.execute(query, (nombre, descripcion, float(precio_venta), float(precio_compra), int(stock_inicial), int(stock_minimo), int(categoria_id), int(id_prod)))
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return False, "No se pudo actualizar el producto"
+
+        return True, "Producto actualizado correctamente"
+
+    except Exception as e:
+        print(f"Error al actualizar producto: {e}")
+        return False, f"Error al actualizar producto: {e}"
+
+    finally:
+        if 'conn' in locals() and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
