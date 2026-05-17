@@ -4,7 +4,8 @@ from papeleria_app.repositorios.usuario_repo import insert_empleado
 from papeleria_app.ui.components.logo_header import Logo_header
 
 
-def alta_empleado_view(page: ft.Page):
+
+def alta_empleado_view(page: ft.Page, on_registro_exitoso=None):
     header = Logo_header("papeleria_app/images/logo_blanco.jpg").getHeader()
 
     nombre_input = ft.TextField(
@@ -63,6 +64,13 @@ def alta_empleado_view(page: ft.Page):
                 insert_empleado(nuevo)
                 mensaje.value = "Empleado registrado correctamente"
                 mensaje.color = "green"
+
+                nombre_input.value = ""
+                contrasena_input.value = ""
+
+                if on_registro_exitoso:
+                    on_registro_exitoso()
+
             except Exception as ex:
                 mensaje.value = f"Error al registrar: {ex}"
                 mensaje.color = "red"
