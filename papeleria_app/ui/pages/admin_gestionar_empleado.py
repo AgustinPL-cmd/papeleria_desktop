@@ -96,7 +96,7 @@ def admin_gestionar_empleado(page):
 
         nombre_field = ft.TextField(label="Nombre", value=empleado["nombre"])
         activo_switch = ft.Switch(value=bool(empleado["activo"]))
-        mensaje_dialogo = ft.Text("Hola", color="red", size=12)
+        mensaje_dialogo = ft.Text("", color="red", size=12)
         dialog = None
 
         def guardar(e):
