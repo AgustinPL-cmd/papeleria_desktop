@@ -142,6 +142,12 @@ def admin_gestionar_empleado(page):
 
         return handler
 
+    #Función para recargar la tabla empleados al insertar un nuevo empleado
+    def recargar_tabla_emp():
+        tabla_container.content = crear_tabla_empleados()
+        page.update()
+
+
     # Botones de selección
     botones_grafica_ventas = ft.Row(
         controls=[
@@ -206,7 +212,7 @@ def admin_gestionar_empleado(page):
             ft.Tab(
                 text="Registrar Empleado",
                 content=ft.Container(
-                    content=alta_empleado_view(page),
+                    content=alta_empleado_view(page, on_registro_exitoso=recargar_tabla_emp),
                     padding=20,
                     expand=True
                 )
