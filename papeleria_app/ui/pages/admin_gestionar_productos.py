@@ -130,6 +130,7 @@ def admin_gestionar_productos(page: ft.Page):
 
         if exito:
             limpiar_formulario()
+            tabla_productos.recargar_datos()
         else:
             page.update()
 
