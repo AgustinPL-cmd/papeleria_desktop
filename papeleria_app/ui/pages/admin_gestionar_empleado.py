@@ -96,24 +96,29 @@ def admin_gestionar_empleado(page):
 
         nombre_field = ft.TextField(label="Nombre", value=empleado["nombre"])
         activo_switch = ft.Switch(value=bool(empleado["activo"]))
+        mensaje_dialogo = ft.Text("Hola", color="red", size=12)
+        dialog = None
 
         def guardar(e):
             exito, msg = edit_empleado(emp_id, nombre_field.value, activo_switch.value)
             if exito:
+                mensaje_dialogo.value = msg
+                mensaje_dialogo.color = "green"
+
                 page.close(dialog)
 
                 tabla_container.content = crear_tabla_empleados()
                 page.snack_bar = ft.SnackBar(content=ft.Text(msg), bgcolor="green")
                 page.snack_bar.open = True
             else:
-                page.snack_bar = ft.SnackBar(content=ft.Text(msg), bgcolor="red")
-                page.snack_bar.open = True
+                mensaje_dialogo.value = msg
+                mensaje_dialogo.color = "red"
             page.update()
 
         dialog = ft.AlertDialog(
             title=ft.Text(f"Editar Empleado {empleado['nombre']}"),
 
-            content=ft.Column([nombre_field, ft.Text("Activo"), activo_switch], tight=True),
+            content=ft.Column([nombre_field, ft.Text("Activo"), activo_switch, mensaje_dialogo], tight=True),
             actions=[
                 ft.TextButton("Cancelar", on_click=lambda e: page.close(dialog)),
                 ft.ElevatedButton("Guardar", on_click=guardar)
