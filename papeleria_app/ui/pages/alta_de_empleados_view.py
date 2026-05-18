@@ -61,9 +61,11 @@ def alta_empleado_view(page: ft.Page, on_registro_exitoso=None):
                 activo=True
             )
             try:
-                insert_empleado(nuevo)
-                mensaje.value = "Empleado registrado correctamente"
-                mensaje.color = "green"
+                success, mensaje.value = insert_empleado(nuevo)
+                if success:
+                    mensaje.color = "green"
+                else:
+                    mensaje.color = "red"
 
                 nombre_input.value = ""
                 contrasena_input.value = ""
