@@ -77,53 +77,67 @@ def empleado_registrar_venta_view(page):
 
     def agregar_producto(e):
         productos = buscar_coincidencias(globals()['buscador'].value)
-        if productos and cantidad_input.value:
-            producto = productos[0]
-            cantidad = int(cantidad_input.value)
-            subtotal = producto[3] * cantidad
-            if producto[5] > cantidad:
-
-                def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
-                    try:
-                        del tabla_productos.rows[fila_idx]
-                    except:
-                        del tabla_productos.rows[0]
-                    page.update()
-
-                boton_eliminar = ft.IconButton(
-                    icon=ft.Icons.DELETE,
-                    tooltip="Eliminar",
-                    icon_color="red",
-                    on_click=lambda e, fila_idx=len(tabla_productos.rows): eliminar_fila(e, fila_idx)
-                )
-                tabla_productos.rows.append(
-                    ft.DataRow(
-                        cells=[
-                            ft.DataCell(ft.Text(producto[1], color="black")),
-                            ft.DataCell(ft.Text(str(cantidad), color="black")),
-                            ft.DataCell(ft.Text(str(producto[3]), color="black")),
-                            ft.DataCell(ft.Text(str(subtotal), color="black")),
-                            ft.DataCell(ft.Text(str(producto[5]), color="black")),
-                            ft.DataCell(boton_eliminar)
-                        ]
-                    )
-                )
-
-                cantidad_input.value = ""
-                resetear_buscador()
-                mensaje_confirmacion.value = ""
-
-                page.update()
-
-            else:
-                mensaje_confirmacion.value = "Stock insuficiente"
-                mensaje_confirmacion.color = "red"
-                page.update()
-
-        else:
+        if not productos:
             mensaje_confirmacion.value = "Producto inexistente"
             mensaje_confirmacion.color = "red"
             page.update()
+            return
+
+        # Validar cantidad
+        try:
+            cantidad = int(cantidad_input.value.strip())
+            if cantidad <= 0:
+                mensaje_confirmacion.value = "La cantidad debe ser mayor a 0"
+                mensaje_confirmacion.color = "red"
+                page.update()
+                return
+        except ValueError:
+            mensaje_confirmacion.value = "Cantidad inválida"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
+
+        producto = productos[0]
+        subtotal = producto[3] * cantidad
+
+        if producto[5] >= cantidad:
+            def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
+                try:
+                    del tabla_productos.rows[fila_idx]
+                except:
+                    del tabla_productos.rows[0]
+                page.update()
+
+            boton_eliminar = ft.IconButton(
+                icon=ft.Icons.DELETE,
+                tooltip="Eliminar",
+                icon_color="red",
+                on_click=lambda e, fila_idx=len(tabla_productos.rows): eliminar_fila(e, fila_idx)
+            )
+            tabla_productos.rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(producto[1], color="black")),
+                        ft.DataCell(ft.Text(str(cantidad), color="black")),
+                        ft.DataCell(ft.Text(str(producto[3]), color="black")),
+                        ft.DataCell(ft.Text(str(subtotal), color="black")),
+                        ft.DataCell(ft.Text(str(producto[5]), color="black")),
+                        ft.DataCell(boton_eliminar)
+                    ]
+                )
+            )
+
+            cantidad_input.value = ""
+            resetear_buscador()
+            mensaje_confirmacion.value = ""
+
+            page.update()
+
+        else:
+            mensaje_confirmacion.value = "Stock insuficiente"
+            mensaje_confirmacion.color = "red"
+            page.update()
+
 
     usuario_data = page.client_storage.get("usuario")
     user = usuario_data["user"]
