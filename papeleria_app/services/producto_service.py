@@ -69,7 +69,7 @@ def obtener_producto_por_id(id_producto: int):
 
 
 def editar_producto(id_producto, nombre, descripcion, precio_venta, precio_compra,
-                    stock_actual, stock_minimo, categoria_nombre):
+                    stock_actual, stock_minimo, categoria_nombre, activo):
     """
     Edita un producto existente con validaciones completas
     """
@@ -118,7 +118,8 @@ def editar_producto(id_producto, nombre, descripcion, precio_venta, precio_compr
         precio_compra=precio_compra_float,
         stock_actual=stock_actual_int,
         stock_minimo=stock_min_int,
-        categoria_id=categoria_obj.id_categoria
+        categoria_id=categoria_obj.id_categoria,
+        activo=activo,
     )
 
     return resultado, mensaje

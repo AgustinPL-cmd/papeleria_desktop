@@ -34,7 +34,7 @@ class ProductosTableAdmin:
                 ft.DataColumn(ft.Text("Categoría", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
                 ft.DataColumn(ft.Text("Precio", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
                 ft.DataColumn(ft.Text("Stock", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
-                ft.DataColumn(ft.Text("Eliminar", color="white")),
+                ft.DataColumn(ft.Text("Eliminar", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
 
             ],
             rows=self._generar_filas(),

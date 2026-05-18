@@ -192,6 +192,8 @@ def admin_gestionar_productos(page: ft.Page):
             expand=True
         )
 
+        campo_activo_switch = ft.Switch(value=bool(producto['activo']))
+
         # Mensaje de error/éxito dentro del diálogo
         mensaje_dialogo = ft.Text("", color="red", size=12)
 
@@ -204,6 +206,7 @@ def admin_gestionar_productos(page: ft.Page):
             stock_actual = campo_stock_actual_edit.value
             stock_minimo = campo_stock_minimo_edit.value
             categoria = campo_categoria_edit.value
+            activo = campo_activo_switch.value
 
             # Validar campos obligatorios
             if not nombre:
@@ -215,7 +218,7 @@ def admin_gestionar_productos(page: ft.Page):
             # Llamar al servicio
             exito, mensaje = editar_producto(
                 id_producto, nombre, descripcion, precio_venta, precio_compra,
-                stock_actual, stock_minimo, categoria
+                stock_actual, stock_minimo, categoria, activo
             )
 
             if exito:
@@ -242,6 +245,8 @@ def admin_gestionar_productos(page: ft.Page):
                     ft.Row([campo_precio_venta_edit, campo_precio_compra_edit], spacing=10),
                     ft.Row([campo_stock_actual_edit, campo_stock_minimo_edit], spacing=10),
                     campo_categoria_edit,
+                    ft.Text("ACTIVO", color="black", size=12),
+                    campo_activo_switch,
                     mensaje_dialogo,
                 ], spacing=15, height=400),
                 width=500,
