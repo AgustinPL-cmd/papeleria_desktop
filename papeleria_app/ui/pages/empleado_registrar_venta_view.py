@@ -69,7 +69,7 @@ def empleado_registrar_venta_view(page):
         )
         productos = buscar_coincidencias("")
         nuevo_buscador.options = [
-            ft.dropdown.Option(key=producto[1], text=f"{producto[1]}: {producto[5]}") for producto in productos
+            ft.dropdown.Option(key=producto[1], text=f"{producto[1]}: {producto[5]}") for producto in productos if producto[8] == 1
         ]
         buscador_container.content = nuevo_buscador
         globals()['buscador'] = nuevo_buscador  # Actualiza referencia global

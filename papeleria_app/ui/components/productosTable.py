@@ -35,6 +35,7 @@ class ProductosTable:
                 ft.DataColumn(ft.Text("Categoría", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
                 ft.DataColumn(ft.Text("Precio", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
                 ft.DataColumn(ft.Text("Stock", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
+                ft.DataColumn(ft.Text("Activo", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
                 ft.DataColumn(ft.Text("Acciones", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)),
             ],
             rows=self._generar_filas(),
@@ -64,6 +65,8 @@ class ProductosTable:
                 on_click=lambda e, pid=p['id_producto']: self._on_editar_click(pid)
             )
 
+            activo_icon = ft.Icon(ft.Icons.CHECK_CIRCLE, color="green") if p["activo"] else ft.Icon(ft.Icons.CANCEL, color="red")
+
             rows.append(
                 ft.DataRow(
                     cells=[
@@ -77,6 +80,7 @@ class ProductosTable:
                                 color=ft.Colors.RED if p['stock_actual'] < p['stock_minimo'] else ft.Colors.BLACK
                             )
                         ),
+                        ft.DataCell(activo_icon),
                         ft.DataCell(btn_editar),
                     ]
                 )

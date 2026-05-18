@@ -263,7 +263,7 @@ def get_producto_by_id(id_producto: int) -> dict | None:
 
 
 def update_producto(id_prod, nombre, descripcion, precio_venta, precio_compra,
-                    stock_actual, stock_minimo, categoria_id):
+                    stock_actual, stock_minimo, categoria_id, activo):
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -275,12 +275,13 @@ def update_producto(id_prod, nombre, descripcion, precio_venta, precio_compra,
                     precio_unitario_compra=%s, \
                     stock_actual=%s, \
                     stock_minimo=%s, \
-                    id_categoria=%s
+                    id_categoria=%s, \
+                    activo=%s \
                 WHERE id_producto = %s \
                 """
         cursor.execute(query, (
             nombre, descripcion, float(precio_venta), float(precio_compra),
-            int(stock_actual), int(stock_minimo), int(categoria_id), int(id_prod)
+            int(stock_actual), int(stock_minimo), int(categoria_id), int(activo), int(id_prod)
         ))
         conn.commit()
 
