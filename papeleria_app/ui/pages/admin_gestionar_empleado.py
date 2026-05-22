@@ -115,6 +115,8 @@ def admin_gestionar_empleado(page):
                 mensaje_dialogo.color = "red"
             page.update()
 
+
+
         dialog = ft.AlertDialog(
             title=ft.Text(f"Editar Empleado {empleado['nombre']}"),
 

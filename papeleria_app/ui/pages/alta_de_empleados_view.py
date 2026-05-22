@@ -87,7 +87,7 @@ def alta_empleado_view(page: ft.Page, on_registro_exitoso=None):
         contrasena_input.value = ""
         mensaje.value = ""
         page.update()
-        page.go("/")
+        page.update()
 
     form_container = ft.Container(
         width=500,
