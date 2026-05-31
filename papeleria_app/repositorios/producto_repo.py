@@ -41,7 +41,7 @@ def buscar_coincidencias(producto):
 
         query = """
             SELECT * FROM productos 
-            WHERE nombre_producto LIKE %s;
+            WHERE nombre_producto LIKE %s AND activo = 1;
         """
         # Agregamos % al inicio y final del término de búsqueda
         parametro_busqueda = f"%{producto}%"
@@ -221,13 +221,13 @@ def aumentar_stock_producto(id_producto: int, cantidad: int) -> tuple:
         stock_actual, stock_minimo = cursor.fetchone()
 
         # Si había una alerta pendiente y ahora el stock es suficiente, la marcamos como resuelta
-        if stock_actual >= stock_minimo:
-            cursor.execute("""
-            UPDATE AlertasInventario 
-            SET estado = 'resuelto' 
-            WHERE productoId = %s AND estado = 'pendiente'
-            """, (id_producto,))
-            conn.commit()
+        #if stock_actual >= stock_minimo:
+        #    cursor.execute("""
+        #    UPDATE AlertasInventario
+        #    SET estado = 'resuelto'
+        #    WHERE productoId = %s AND estado = 'pendiente'
+        #    """, (id_producto,))
+        #    conn.commit()
 
         return True, f"Stock actualizado correctamente. Nuevo stock: {stock_actual}"
 

@@ -23,31 +23,54 @@ def admin_registrar_compra(page):
         tabla_productos.rows.clear()
         resetear_buscador()
         mensaje_confirmacion.value = ""
+        cantidad_input.value = ""
+        page.update()
 
     def registrar_compra(e):
         rows = tabla_productos.rows
-        if rows:
-            for row in rows:
-                valores = []
-                for cell in row.cells:
-                    if isinstance(cell.content, ft.Text):
-                        valores.append(cell.content.value)
+        if not rows:
+            mensaje_confirmacion.value = "No hay productos para registrar"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
 
-                    else:
-                        valores.append("[No texto]")
-                try:
-                    producto = buscar_coincidencias(valores[0])
-                    print(valores)
-                    commit, mensaje = aumentar_stock_producto(producto[0][0], int(valores[1]))
-
-                    mensaje_confirmacion.value = mensaje
-                    mensaje_confirmacion.color = "green"
+        # Recorrer filas y aumentar stock de cada producto
+        for row in rows:
+            # Obtener id_producto desde el metadato de la fila
+            id_producto = row.data.get("id_producto") if hasattr(row, "data") else None
+            if not id_producto:
+                # Alternativa: extraer nombre de la primera celda y buscar producto
+                nombre_celda = row.cells[0].content.value
+                productos = buscar_coincidencias(nombre_celda)
+                if productos:
+                    id_producto = productos[0][0]
+                else:
+                    mensaje_confirmacion.value = f"Producto {nombre_celda} no encontrado"
+                    mensaje_confirmacion.color = "red"
                     page.update()
-                except Exception as e:
-                    mensaje = f'Ha ocurrido un error inesperado {e}'
-                    return None, mensaje
-        limpiar()
+                    return
 
+            cantidad_text = row.cells[1].content.value
+            try:
+                cantidad = int(cantidad_text)
+            except ValueError:
+                mensaje_confirmacion.value = f"Cantidad inválida para {nombre_celda}"
+                mensaje_confirmacion.color = "red"
+                page.update()
+                return
+
+            exito, mensaje = aumentar_stock_producto(id_producto, cantidad)
+            if not exito:
+                mensaje_confirmacion.value = mensaje
+                mensaje_confirmacion.color = "red"
+                page.update()
+                return
+
+        # Si todo ok
+        mensaje_confirmacion.value = "Compra registrada correctamente"
+        mensaje_confirmacion.color = "green"
+        limpiar()  # Vacía la tabla y el buscador
+        page.update()
 
     buscador_container = ft.Container()  # Contenedor para el dropdown
 
@@ -62,71 +85,90 @@ def admin_registrar_compra(page):
             hint_style=ft.TextStyle(color="black"),
             editable=True,
             leading_icon=ft.Icons.SEARCH,
-            icon_disabled_color="black",
             border_color="#0B1D51",
             label_style=ft.TextStyle(color="#0B1D51"),
             color="black",
             text_style=ft.TextStyle(color="black"),
-
         )
-        productos = buscar_coincidencias("")
+        productos = buscar_coincidencias("")  # Todos los productos activos
+        # Crear opciones con key = id_producto, text = nombre + stock
         nuevo_buscador.options = [
-            ft.dropdown.Option(key=producto[1], text=f"{producto[1]}: {producto[5]}") for producto in productos
+            ft.dropdown.Option(key=str(p[0]), text=f"{p[1]} (Stock: {p[5]})")
+            for p in productos if p[8] == 1  # asumiendo que índice 8 es 'activo'
         ]
         buscador_container.content = nuevo_buscador
-        globals()['buscador'] = nuevo_buscador  # Actualiza referencia global
+        globals()['buscador'] = nuevo_buscador
         page.update()
 
     def agregar_producto(e):
-        productos = buscar_coincidencias(globals()['buscador'].value)
-        if productos and cantidad_input.value:
-            producto = productos[0]
-            cantidad = int(cantidad_input.value)
-            costo = producto[4] * cantidad
-            if producto[5] > cantidad:
-
-                def eliminar_fila(e, fila_idx=len(tabla_productos.rows)):
-                    try:
-                        del tabla_productos.rows[fila_idx]
-                    except:
-                        del tabla_productos.rows[0]
-                    page.update()
-
-                boton_eliminar = ft.IconButton(
-                    icon=ft.Icons.DELETE,
-                    tooltip="Eliminar",
-                    icon_color="red",
-                    on_click=lambda e, fila_idx=len(tabla_productos.rows): eliminar_fila(e, fila_idx)
-                )
-                tabla_productos.rows.append(
-                    ft.DataRow(
-                        cells=[
-                            ft.DataCell(ft.Text(producto[1], color="black")),
-                            ft.DataCell(ft.Text(str(cantidad), color="black")),
-                            ft.DataCell(ft.Text(str(producto[4]), color="black")),
-                            ft.DataCell(ft.Text(str(costo), color="black")),
-                            ft.DataCell(ft.Text(str(producto[5]), color="black")),
-                            ft.DataCell(boton_eliminar)
-                        ]
-                    )
-                )
-
-                cantidad_input.value = ""
-                resetear_buscador()
-                mensaje_confirmacion.value = ""
-
-                page.update()
-
-            else:
-                mensaje_confirmacion.value = "Stock insuficiente"
-                mensaje_confirmacion.color = "red"
-                page.update()
-
-        else:
-            mensaje_confirmacion.value = "Producto inexistente"
+        # El valor del dropdown ahora es el ID (string)
+        producto_id_str = globals()['buscador'].value
+        if not producto_id_str:
+            mensaje_confirmacion.value = "Selecciona un producto"
             mensaje_confirmacion.color = "red"
             page.update()
+            return
 
+        try:
+            producto_id = int(producto_id_str)
+        except ValueError:
+            mensaje_confirmacion.value = "ID de producto inválido"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
+
+        # Obtener producto por ID (usando la función que ya tienes)
+        from papeleria_app.repositorios.producto_repo import get_producto_by_id
+        producto = get_producto_by_id(producto_id)
+        if not producto:
+            mensaje_confirmacion.value = "Producto no encontrado"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
+
+        # Validar cantidad
+        try:
+            cantidad = int(cantidad_input.value.strip())
+            if cantidad <= 0:
+                mensaje_confirmacion.value = "La cantidad debe ser mayor a 0"
+                mensaje_confirmacion.color = "red"
+                page.update()
+                return
+        except ValueError:
+            mensaje_confirmacion.value = "Cantidad inválida"
+            mensaje_confirmacion.color = "red"
+            page.update()
+            return
+
+        costo_total = producto['precio_unitario_compra'] * cantidad
+
+        # Crear fila en la tabla (guardando el ID en un atributo de la fila)
+        boton_eliminar = ft.IconButton(
+            icon=ft.Icons.DELETE,
+            tooltip="Eliminar",
+            icon_color="red",
+            on_click=lambda e, idx=len(tabla_productos.rows): eliminar_fila(e, idx)
+        )
+
+        nueva_fila = ft.DataRow(
+            cells=[
+                ft.DataCell(ft.Text(producto['nombre_producto'], color="black")),
+                ft.DataCell(ft.Text(str(cantidad), color="black")),
+                ft.DataCell(ft.Text(f"{producto['precio_unitario_compra']:.2f}", color="black")),
+                ft.DataCell(ft.Text(f"{costo_total:.2f}", color="black")),
+                ft.DataCell(ft.Text(str(producto['stock_actual']), color="black")),
+                ft.DataCell(boton_eliminar)
+            ],
+            data={"id_producto": producto['id_producto']}  # Guardar ID aquí
+        )
+        tabla_productos.rows.append(nueva_fila)
+
+        # Limpiar
+        cantidad_input.value = ""
+        resetear_buscador()
+        mensaje_confirmacion.value = "Producto agregado"
+        mensaje_confirmacion.color = "green"
+        page.update()
     usuario_data = page.client_storage.get("usuario")
     user = usuario_data["user"]
     user_id = user["id_usuario"]
