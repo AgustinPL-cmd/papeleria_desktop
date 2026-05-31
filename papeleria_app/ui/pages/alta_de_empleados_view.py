@@ -52,36 +52,51 @@ def alta_empleado_view(page: ft.Page, on_registro_exitoso=None):
 
     mensaje = ft.Text("", color="red", size=14, text_align=ft.TextAlign.CENTER)
 
+    import re
+
     def registrar(e):
-        if nombre_input.value.strip() != "" and contrasena_input.value.strip() != "":
-            nuevo = Usuario(
-                nombre=nombre_input.value,
-                contrasena=contrasena_input.value,
-                rol="empleado",
-                activo=True
-            )
-            try:
-                success, mensaje.value = insert_empleado(nuevo)
-                if success:
-                    mensaje.color = "green"
-                else:
-                    mensaje.color = "red"
+        nombre = nombre_input.value.strip()
+        contrasena = contrasena_input.value.strip()
 
-                nombre_input.value = ""
-                contrasena_input.value = ""
-
-                if on_registro_exitoso:
-                    on_registro_exitoso()
-
-            except Exception as ex:
-                mensaje.value = f"Error al registrar: {ex}"
-                mensaje.color = "red"
-                print("ERROR:", ex)
-        else:
-            mensaje.value = "Los campos no pueden estar vacíos"
+        # Validar nombre: solo letras, espacios, acentos y algunos caracteres básicos
+        pattern = re.compile(r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$")
+        if not nombre:
+            mensaje.value = "El nombre no puede estar vacío"
             mensaje.color = "red"
-        page.update()
+            page.update()
+            return
+        if not pattern.match(nombre):
+            mensaje.value = "El nombre solo puede contener letras, espacios y acentos"
+            mensaje.color = "red"
+            page.update()
+            return
 
+        if not contrasena:
+            mensaje.value = "La contraseña no puede estar vacía"
+            mensaje.color = "red"
+            page.update()
+            return
+
+        nuevo = Usuario(
+            nombre=nombre,
+            contrasena=contrasena,
+            rol="empleado",
+            activo=True
+        )
+        try:
+            insert_empleado(nuevo)
+            mensaje.value = "Empleado registrado correctamente"
+            mensaje.color = "green"
+            nombre_input.value = ""
+            contrasena_input.value = ""
+            if on_registro_exitoso:
+                on_registro_exitoso()
+        except Exception as ex:
+            mensaje.value = f"Error al registrar: {ex}"
+            mensaje.color = "red"
+            print("ERROR:", ex)
+        page.update()
+        
     def cancelar(e):
         nombre_input.value = ""
         contrasena_input.value = ""
